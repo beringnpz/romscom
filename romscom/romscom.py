@@ -12,6 +12,8 @@ import glob
 import netCDF4 as nc
 import math
 import rcutils as r
+import csv
+import sys
 
 """
 ============================
@@ -76,7 +78,7 @@ def stringifyvalues(d, compress=False):
     else:
         consecstep=-99999
 
-    newdict = copy.copy(d)
+    newdict = copy.deepcopy(d)
 
     for x in newdict:
 
