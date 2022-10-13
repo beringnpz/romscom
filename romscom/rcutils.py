@@ -251,9 +251,12 @@ def timefieldlist(d):
                 'NQCK', 'NTLM', 'NADJ', 'NSFF', 'NOBC',
                 'NDEFHIS', 'NDEFQCK', 'NDEFAVG', 'NDEFDIA', 'NDEFTLM', 'NDEFADJ']
 
+    rem = []
     for x in timeflds:
         if not x in d:
-            timeflds.remove(x)
+            rem.append(x)
+
+    timeflds = [x for x in timeflds if x not in rem]
 
     return timeflds
 

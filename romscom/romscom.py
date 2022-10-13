@@ -11,7 +11,7 @@ import os
 import glob
 import netCDF4 as nc
 import math
-import rcutils as r
+import romscom.rcutils as r
 
 """
 ============================
@@ -76,7 +76,7 @@ def stringifyvalues(d, compress=False):
     else:
         consecstep=-99999
 
-    newdict = copy.copy(d)
+    newdict = copy.deepcopy(d)
 
     for x in newdict:
 
@@ -117,6 +117,16 @@ def stringifyvalues(d, compress=False):
                     newdict[x][k] = delim.join(line)
                 else:
                     newdict[x][k] = ' '.join(newdict[x][k])
+        elif x in ['fsh_age_offset', 'fsh_q_G', 'fsh_q_Gz', 'fsh_alpha_G', 
+                   'fsh_alpha_Gz', 'fsh_beta_G', 'fsh_beta_Gz', 'fsh_catch_sel', 
+                    'fsh_catch_01', 'fsh_catch_99']:
+            # FEAST parses arrays via repeated keywords
+            tmp = newdict[x]
+            for ii in range(0,len(tmp)):
+                tmp[ii] = r.list2str(tmp[ii], consecstep=-99999)
+                if ii > 0:
+                    tmp[ii] = f"{x} == {tmp[ii]}"
+            newdict[x] = '\n'.join(tmp)
         else:
             if isinstance(newdict[x], float):
                 newdict[x] = r.float2str(newdict[x])

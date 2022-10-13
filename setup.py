@@ -5,5 +5,6 @@ setup(
     version='0.1dev',
     packages=['romscom'],
     author='Kelly Kearney',
-    author_email='kelly.kearney@noaa.gov'
+    author_email='kakearney@gmail.com'
+    # install_requires=['collections', 'datetime', 'os', 'subprocess', 'copy', 'numpy', 're']
 )
