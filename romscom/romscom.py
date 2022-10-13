@@ -11,6 +11,9 @@ import os
 import glob
 import netCDF4 as nc
 import math
+import csv
+import sys
+import subprocess
 import romscom.rcutils as r
 
 """
@@ -199,7 +202,7 @@ def dict2standardin(d, compress=False, file=None):
             f.write(txt)
 
 def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
-               compress=False, romscmd="mpirun romsM", dryrunflag=True,
+               compress=False, romscmd=["mpirun","romsM"], dryrunflag=True,
                permissions=0o755):
     """
     Sets up I/O and runs ROMS simulation through indicated date
@@ -317,11 +320,13 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
 
         # Print summary
 
+        cmdstr = ' '.join(romscmd)
+
         print("Running ROMS simulation")
         print(f"  Counter block:   {cnt}")
         print(f"  Start date:      {tini.strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"  End date:        {tend.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"  ROMS command:    {romscmd}")
+        print(f"  ROMS command:    {cmdstr}")
         print(f"  Standard input:  {standinfile}")
         print(f"  Standard output: {standoutfile}")
         print(f"  Standard error:  {standerrfile}")
@@ -330,8 +335,8 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
             print("Dry run")
             return 'dryrun'
         else:
-            with open(standinfile, 'r') as fin, open(standoutfile, 'w') as fout, open(standerrfile, 'w') as ferr:
-                subprocess.run(romscmd, stdin=fin, stdout=fout, stderr=ferr)
+            with open(standoutfile, 'w') as fout, open(standerrfile, 'w') as ferr:
+                subprocess.run(romscmd+[standinfile], stdout=fout, stderr=ferr)
 
         rsim = r.parseromslog(standoutfile)
 

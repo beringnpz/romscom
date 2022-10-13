@@ -13,6 +13,8 @@ import sys
 from datetime import datetime, timedelta
 import glob
 import os
+import netCDF4 as nc
+import re
 
 def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
     """
@@ -285,3 +287,51 @@ def flatten(A):
         if isinstance(i,list): rt.extend(flatten(i))
         else: rt.append(i)
     return rt
+    
+def parseromslog(fname):
+    """
+    Parse ROMS standard output log for some details
+
+    This function extracts details about the success (or not) of a ROMS
+    simulation
+
+    Args
+        fname:  log file name
+
+    Returns:
+        dictionary object with the following keys:
+            cleanrun:   True if simulation ran without errors
+            blowup:     True if simulation blew up
+            laststep:   Index of last step recorded
+            lasthis:    Name of last history file defined
+    """
+
+    with open(fname, 'r') as f:
+        lines = f.read()
+        lnnum = lines.find('ROMS/TOMS: DONE')
+        cleanrun = lnnum != -1
+
+        lnnum1 = lines.find('Blowing-up: Saving latest model state into  RESTART file')
+        lnnum2 = lines.find('MAIN: Abnormal termination: BLOWUP')
+        blowup = (lnnum1 != -1) | (lnnum2 != -1)
+
+    step = []
+    lasthis = []
+    if cleanrun:
+        with open(fname, 'r') as f:
+
+            datablock = False
+
+            for line in f:
+                if line.find('STEP   Day HH:MM:SS  KINETIC_ENRG   POTEN_ENRG    TOTAL_ENRG    NET_VOLUME') != -1:
+                    datablock = True
+                elif line.find('Elapsed CPU time (seconds):') != -1:
+                    datablock = False
+                elif datablock:
+                    tmp = line.split() #string.split(line.strip())
+                    if len(tmp) == 7 and tmp[0].isdigit():
+                        step = int(tmp[0])
+                    if len(tmp) == 6 and tmp[0] == 'DEF_HIS':
+                        lasthis = tmp[-1]
+
+    return {'cleanrun': cleanrun, 'blowup': blowup, 'laststep': step, 'lasthis':lasthis}
