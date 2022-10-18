@@ -271,6 +271,13 @@ def inputfilesexist(ocean):
            'APARNAM','SPOSNAM','FPOSNAM','IPARNAM','BPARNAM','SPARNAM',
            'USRNAME']
 
+    rem = []
+    for x in fkey:
+        if not x in ocean:
+            rem.append(x)
+
+    fkey = [x for x in fkey if x not in rem]
+
     files = flatten([ocean[x] for x in fkey])
     flag = False
 
