@@ -203,7 +203,7 @@ def dict2standardin(d, compress=False, file=None):
 
 def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
                compress=False, romscmd=["mpirun","romsM"], dryrunflag=True,
-               permissions=0o755):
+               permissions=0o755, count=1):
     """
     Sets up I/O and runs ROMS simulation through indicated date
 
@@ -255,7 +255,7 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
         ocean['ININAME'] = rstinfo['lastfile']
         ocean['NRREC'] = -1
     else:
-        cnt = 1
+        cnt = count
         ocean['ININAME'] = inifile
         ocean['NRREC'] = nrrec
 
