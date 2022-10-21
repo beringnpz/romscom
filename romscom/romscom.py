@@ -16,29 +16,19 @@ import sys
 import subprocess
 import romscom.rcutils as r
 
-"""
-============================
-Standard input functions
-============================
-This set of functions converts between parameter dictionary and ROMS standard
-input format
-"""
 
 def readparamfile(filename, tconvert=False):
     """
     Reads parameter YAML file into an ordered dictionary
 
     Args:
-
-        filename:   name of parameter file
-
-    Optional keyword args (defaults in []):
-
-        tconvert:   logical, True to convert time-related fields to datetimes
-                    and timedeltas, False to keep in native ROMS format [False]
+        filename (string): name of parameter file
+        tconvert (logical, optional): True to convert time-related fields to 
+            datetimes and timedeltas, False (default) to keep in native ROMS 
+            format.
 
     Returns:
-        parameter dictionary
+        (OrderedDict): parameter dictionary
     """
 
     with open(filename, 'r') as f:
@@ -62,16 +52,12 @@ def stringifyvalues(d, compress=False):
     receive the appropriate formatting
 
     Args:
-
-        d:          ROMS parameter dictionary
-
-    Optional keyword args (defaults in []):
-
-        compress:   True to compress repreated values (e.g., T T T -> 3*T),
-                    False to leave as is [False]
+        d (dict): ROMS parameter dictionary
+        compress (logical, optional): True to compress repreated values (e.g., 
+            T T T -> 3*T), False (default) to leave as is.
 
     Returns:
-        copy of d with all values replaced by ROMS-formatted strings
+        (dict) deep copy of d with all values replaced by ROMS-formatted strings
     """
 
     if compress:
@@ -155,18 +141,14 @@ def dict2standardin(d, compress=False, file=None):
     writes to file
 
     Args:
-
-        d:          parameter dictionary
-
-    Optional keyword args (defaults in []):
-
-        compress:   True to compress repeated values (i.e., T T T -> 3*T),
-                    [False]
-        file:       name of output file.  If included, text will be printed to
-                    file rather than returns
+        d (dict): parameter dictionary
+        compress (logical, optional): True to compress repreated values (e.g., 
+            T T T -> 3*T), False (default) to leave as is.
+        file (string or None): name of output file.  If None (default), text is 
+            returned; otherwise, text will be printed to file indicated
 
     Returns:
-        text string of standard input text (only if output file not provided)
+        (string) text of standard input text (only if output file not provided)
 
     """
     if 'DT' in d:
@@ -203,33 +185,83 @@ def dict2standardin(d, compress=False, file=None):
 
 def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
                compress=False, romscmd=["mpirun","romsM"], dryrunflag=True,
-               permissions=0o755, count=1):
+               permissions=0o755, count=1, runpastblowup=True):
     """
     Sets up I/O and runs ROMS simulation through indicated date
+               
+    This function provides a wrapper to set up a ROMS simulation and run
+    through the desired date, allowing for robust restarts when necessary. It
+    organizes ROMS I/O under a 3-folder system under the user-specified simdir
+    folder. Before calling the ROMS executable, it looks for an
+    appropriately-named restart file under the Out subfolder. If found, it uses
+    this restart file to initialize a run with NRREC=-1; otherwise, it will use
+    the user-provided ININAME and NRREC values. It also adjusts the NTIMES
+    field to reach the requested end date.
+               
+    This procedure allows a simulation to be restarted using the same command
+    regardless of whether it has been partially completed or not; this can be
+    useful when running simulations on computer clusters where jobs may be
+    cancelled and resubmitted for various queue management reasons, or to extend 
+    existing simulations with new forcing.
+               
+    This function also provides the option to work through ROMS blowups. These
+    occur when physical conditions lead to numeric instabilities. Blowups can
+    sometimes be mitigated by reducing the model time step. When the
+    runpastblowup option is True and runtodate encounters a blowup, it will
+    adjust the DT parameter to the user-provided slow time step, restart the
+    simulation from the last history file, and run for 30 days.  It will then 
+    return to the original time step and resume. Note that this time step
+    reduction will only be attempted once; if the model still blows up, the
+    simulation will exit and the user will need to troubleshoot the situation.
+               
+    Each time the model is restarted, output file counters are incremented as 
+    specified by the addcounter option.  This preserves output that would 
+    otherwise be overwritten on restart with the same simulation name.  By 
+    default, the counter is only added to file types that modern ROMS does not 
+    check for on restart.
 
     Args:
 
-        ocean:      ROMS parameter dictionary for standard input
-        simdir:     string, folder where I/O subfolders are found/created
-        simname:    string, base name for simulation, used as prefix for auto-generated
-                    input, standard output and error files, and .nc output.
-        enddate:    datetime, simulation end date
-
-    Optional keyword args (defaults in []):
-
-        dtslow:     timedelta, length of time step used during slow-stepping
-                    (blowup) periods.  If None, this will be set to half the
-                    primary (i.e., ocean['DT']) time step [None]
-        addcounter: output file types for which a counter index will be added.
-                    (See setoutfilenames) ["most"]
-        compress:   logical, True to compress repeated values in standard input
-                    file (see stringifyvalues) [False]
-        romscmd:    string, command used to call the ROMS executable.
-                    ["mpirun romsM"]
-        dryrunflag: True to perform a sry run, where I/O is prepped but ROMS
-                    executable is not called
-        permissions:folder permissions applied to I/O subfolders if they don't
-                    already exist (see os.chmod). [0o755]
+        ocean (dict): ROMS parameter dictionary for standard input
+        simdir (string): folder where I/O subfolders are found/created
+        simname (string): base name for simulation, used as prefix for 
+            auto-generated input, standard output and error files, 
+            and .nc output.
+        enddate (datetime):    datetime, simulation end date
+        dtslow (timedelta, optional): length of time step used during 
+            slow-stepping (blowup) periods. If None (default), this will be set
+            to half the primary (i.e., ocean['DT']) time step
+        addcounter (string or list of strings, optional): list of output 
+            filename prefixes corresponding to those where a counter index 
+            should be added to the name, or one of the following special strings
+            all:    add counter to all output types
+            most:   add counter only to output types that do not have
+                    the option of being broken into smaller files on
+                    output (i.e. those that do not have an NDEFXXX
+                    option)
+            none:   do not add counter to any (default)
+        compress (logical, optional): True to compress repreated values (e.g., 
+            T T T -> 3*T), False (default) to leave as is.
+        romscmd (list of strings, optional): components of command used to call 
+            the ROMS executable (see subprocess.run).  Default is 
+            ["mpirun","romsM"], which would be  appropriate to call a 
+            compiled-for-parallel ROMS executable via MPI.
+        dryrunflag (logical, optional): True to perform a dry run, where I/O is 
+            prepped but the ROMS executable is not called, False to call ROMS.  
+            Defaults to True
+        permissions (octal, optional): folder permissions applied to I/O 
+            subfolders if they don't already exist (see os.chmod). Default is 
+            0o755
+        count (int, optional): Starting index for file counter.
+               
+    Returns:
+               
+        (string) indicator of ROMS simulation results:
+            dryrun: dryrunflag was True, no simulation was attempted
+            blowup: simulation blew up (either with runpastblowup off, or 
+               reduction of time step did not mitigate blowup)
+            error: simulation encountered an error other than a blowup
+            success: simulation completed successfully
     """
 
     # Get some stuff from dictionary, before we make changes
@@ -261,8 +293,10 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
 
     # Check that all input files exist (better to do this here than let ROMS try and fail)
 
-    r.inputfilesexist(ocean)
-
+    flag = r.inputfilesexist(ocean)
+    if not flag:
+        Exception("Input file missing, exiting")
+    
     # Get starting time from initialization file
 
     f = nc.Dataset(ocean['ININAME'], 'r')
@@ -357,6 +391,10 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
         cnt = rstinfo['count']
 
         if rsim['blowup']:
+            if not runpastblowup:
+                print('  Simulation block blew up')
+                return 'blowup'
+                
             if ocean['DT'] == dtslow:
                 print('  Simulation block blew up in a slow-step period')
                 return 'blowup'
@@ -404,6 +442,33 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
 
 
 def simfolders(simdir, create=False, permissions=0o755):
+    """
+    Generate folder path names for the 3 I/O folders used by runtodate
+    
+    Generate strings for, and if requested, create folder fors ROMS text input 
+    and output.  This 3-folder system is used by the runtodate function.  Note 
+    that the In folder is intended for the auto-generated standard input files 
+    created by runtodate; while this can be a covenient location to place other 
+    files as well (such as bio, station, etc. text input files or netCDF forcing 
+    files), those extra files do not need to reside there.
+    
+    Args:
+        simdir (string): path to location where folders will be located.
+        create (logical, optional): True to create the folders if they do not 
+            exist.  Defaults to False
+        permissions (octal, optional): folder permissions applied to I/O 
+            subfolders if they don't already exist (see os.chmod). Default is 
+            0o755
+    
+    Returns:
+        (dict) with fields
+            out (string): path to folder for ROMS netCDF output will be placed
+            in (string): path to folder for romscom-generated ROMS text input 
+                 files
+            log (string): path to folder for standard error and standard output 
+                files
+    
+    """
 
     outdir = os.path.join(simdir, "Out")
     indir  = os.path.join(simdir, "In")
@@ -424,29 +489,30 @@ def simfolders(simdir, create=False, permissions=0o755):
 
 def setoutfilenames(ocean, base, cnt=1, outtype="all", addcounter="none"):
     """
-    Resets the values of output file name parameters
+    Resets the values of output file name parameters in a dictionary
 
     This function systematically resets the output file name values using the
     pattern {base}_{prefix}.nc, where prefix is a lowercase version of the 3- or
     4-letter prefix of the various XXXNAME parameters.
 
     Args:
-        ocean:      parameter dictionary
-        base:       base name for output files (including path when applicable)
-        cnt:        counter to be added, if requested [default=1]
-        outtype:    list of output filename prefixes corresponding to those to
-                    be modified (e.g., ['AVG', 'HIS']), or one of the following
-                    special strings:
-                    all:    modify all output types (default)
-        addcounter: list of output filename prefixes corresponding to those
-                    where a counter index should be added to the name, or one of
-                    the following special strings
-                    all:    add counter to all output types
-                    most:   add counter only to output types that do not have
-                            the option of being broken into smaller files on
-                            output (i.e. those that do not have an NDEFXXX
-                            option)
-                    none:   do not add counter to any (default)
+        ocean (dict): parameter dictionary
+        base (string): base name for output files (including path when 
+            applicable)
+        cnt (int): counter to be added to filenames, if requested.  Default = 1
+        outtype (string or list of strings, optional): list of output filename 
+            prefixes corresponding to those to be modified (e.g., 
+            ['AVG', 'HIS']), or one of the followingspecial strings:
+            all:    modify all output types (default)
+        addcounter (string or list of strings, optional): list of output 
+            filename prefixes corresponding to those where a counter index 
+            should be added to the name, or one of the following special strings
+            all:    add counter to all output types
+            most:   add counter only to output types that do not have
+                    the option of being broken into smaller files on
+                    output (i.e. those that do not have an NDEFXXX
+                    option)
+            none:   do not add counter to any (default)
     """
 
     outopt = ['DAI', 'GST', 'RST', 'HIS', 'QCK', 'TLF', 'TLM', 'ADJ', 'AVG',
@@ -491,9 +557,10 @@ def converttimes(d, direction):
 
     Args:
 
-        d:          ROMS parameter dictionary
-        direction:  "ROMS" = convert to ROMS standard input units
-                    "time" = convert to datetime/timedelta values
+        d (dict): ROMS parameter dictionary
+        direction (string): one of the following:
+            ROMS: convert to ROMS standard input units
+            time: convert to datetime/timedelta values
 
     Returns:
         no return argument, input dictionary altered in place

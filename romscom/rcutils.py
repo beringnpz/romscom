@@ -15,10 +15,11 @@ import glob
 import os
 import netCDF4 as nc
 import re
+import warnings
 
 def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
     """
-    This function pulled from https://stackoverflow.com/questions/5121931/.
+    This function was pulled from https://stackoverflow.com/questions/5121931/.
     It makes sure YAML dictionary loads preserve order, even in older
     versions of python.
 
@@ -28,6 +29,10 @@ def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
 
     usage example:
     ordered_load(stream, yaml.SafeLoader)
+    
+    Returns:
+        (OrderedDict)
+    
     """
 
     class OrderedLoader(Loader):
@@ -43,6 +48,12 @@ def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
 def bool2str(x):
     """
     Formats input boolean as string 'T' or 'F'
+    
+    Args:
+        x (logical)
+    
+    Returns:
+        (string) T or F, corresponding to True or False, respectively
     """
     if not isinstance(x, bool):
         return x
@@ -54,10 +65,10 @@ def float2str(x):
     Formats input float as Fortran-style double-precision string
 
     Args:
-        x:  scalar float
+        x (float)
 
     Returns:
-        y:  string with x in Fortran double-precision syntax (e.g., "1.0d0")
+        (string) x in Fortran double-precision syntax (e.g., "1.0d0")
     """
     if not isinstance(x, float):
         return
@@ -72,9 +83,9 @@ def consecutive(data, stepsize=0):
     Groups values in list based on difference between consecutive elements
 
     Args:
-        data:       a list
-        stepsize:   difference between consecutive elements to use for
-                    grouping. Default = 0, i.e. identical values grouped
+        data (list): list of numeric values
+        stepsize (numeric): difference between consecutive elements to use for
+            grouping. Default = 0, i.e. identical values grouped
 
     Returns:
         list of lists, values grouped.
@@ -93,19 +104,20 @@ def list2str(tmp, consecstep=-99999):
     Convert list of bools, floats, or integers to string
 
     Args:
-        tmp:        a list of either all bools, all floats, all
-                    integers, or all strings
-        consecstep: step size to use for compression.  Default = -99999,
-                    i.e. no compression; use 0 for ROMS-style compression
-                    (i.e. T T T F -> 3*T F).  Not applicable to string lists.
+        tmp (list): a list of either all bools, all floats, all integers, or all 
+            strings
+        consecstep (numeric): step size to use for compression.  
+            Default = -99999, i.e. no compression; use 0 for ROMS-style 
+            compression (i.e. T T T F -> 3*T F).  Not applicable to string lists.
 
     Returns:
-        string, ROMS-appropriate string of inputs
+        (string) ROMS-appropriate string version of list values
     """
     if not (all(isinstance(x, float) for x in tmp) or
             all(isinstance(x, bool)  for x in tmp) or
             all(isinstance(x, int)   for x in tmp) or
             all(isinstance(x, str)   for x in tmp)):
+        warnings.warn("Mixed data types found in list; skipping string conversion")
         return tmp
 
     if isinstance(tmp[0], str):
@@ -138,10 +150,10 @@ def multifile2str(tmp):
     Convert a multifile list of filenames (with possible nesting) to string
 
     Args:
-        tmp:    a list of either strings or lists of strings (can include both)
+        tmp (string or list of strings): names of files and multi-files
 
     Returns:
-        string, ROMS multi-file formated
+        (string) ROMS multi-file formatted as string
     """
 
     for idx in range(0, len(tmp)):
@@ -169,6 +181,15 @@ def checkforstring(x, prefix=''):
 
 
 def formatkeyvalue(kw, val, singular):
+    """
+    Format dictionary entries as ROMS parameter assignments
+    
+    Args:
+        kw (string): key
+        val (string): stringified value
+        singular (list of strings): list of keys that should be treated as 
+            unvarying across ROMS grids (i.e. uses a = assignment vs ==)
+    """
     if kw in singular:
         return '{:s} = {}\n'.format(kw,val)
     else:
@@ -185,14 +206,13 @@ def parserst(filebase):
     where XX is the counter for number of restarts.
 
     Args:
-        filebase:   base name for restart files (can include full path)
+        filebase (string): base name for restart files (can include full path)
 
     Returns:
-        d:          dictionary object with the following keys:
-                    lastfile:   full path to last restart file
-                    cnt:        restart counter of last file incremented
-                                by 1 (i.e. count you would want to
-                                restart with in runtodate)
+        (dict) with the following keys:
+            lastfile (string): full path to last restart file
+            cnt (int): restart counter of last file incremented by 1 (i.e. count 
+                you would want to restart with in runtodate)
     """
     allrst = sorted(glob.glob(os.path.join(filebase + "_??_rst.nc")))
 
@@ -227,6 +247,14 @@ def parserst(filebase):
 def fieldsaretime(d):
     """
     True if all time-related fields are in datetime/timedelta format
+    
+    Args:
+        d (dict): parameter dictionary
+    
+    Returns:
+        (boolean): True if all time-related fields are in datetime/timedelta 
+        format, False if all are numeric.  Raises exception if a mix is 
+        found.
     """
     timeflds = timefieldlist(d)
 
@@ -248,6 +276,17 @@ def fieldsaretime(d):
         raise Exception("Unexpected data types in time-related fields")
 
 def timefieldlist(d):
+    """
+    Get list of time-related dictionary keys
+    
+    Args:
+        d (dict): parameter dictionary
+    
+    Returns:
+        (list of strings) keys in d that are time-related
+    """
+    
+    
     timeflds = ['NTIMES', 'NTIMES_ANA', 'NTIMES_FCT',
                 'NRST', 'NSTA', 'NFLT', 'NINFO', 'NHIS', 'NAVG', 'NAVG2', 'NDIA',
                 'NQCK', 'NTLM', 'NADJ', 'NSFF', 'NOBC',
@@ -262,8 +301,20 @@ def timefieldlist(d):
 
     return timeflds
 
-
 def inputfilesexist(ocean):
+    """
+    Check that all ROMS input files exist.  If a filename starts with the string 
+    "placeholder", it is ignored in this check (this allows you to keep unused 
+    parameters in the YAML files, but clearly indicates that these files will 
+    not be required)
+    
+    Args:
+        ocean (dict): parameter dictionary
+    
+    Returns:
+        (boolean): True if all files exist (or are marked as placeholders), 
+        False otherwise
+    """
 
     fkey = ['GRDNAME','ININAME','ITLNAME','IRPNAME','IADNAME','FWDNAME',
            'ADSNAME','FOInameA','FOInameB','FCTnameA','FCTnameB','NGCNAME',
@@ -279,16 +330,25 @@ def inputfilesexist(ocean):
     fkey = [x for x in fkey if x not in rem]
 
     files = flatten([ocean[x] for x in fkey])
-    flag = False
+    flag = True
 
     for f in files:
         if not f.startswith('placeholder') and not os.path.isfile(f):
-            print('WARNING!: Cannot find file {}'.format(f))
-            flag = True
-    if flag:
-        sys.exit()
+            warnings.warn(f"Cannot find file {f}")
+            flag = False
 
 def flatten(A):
+    """
+    Recursively flatten a list of lists (of lists of lists...)
+    
+    Args:
+        A (list) list that may contains nested lists
+    
+    Returns:
+        (list) contents of A where all sub-lists have been flattened to a single 
+            level
+    
+    """
     rt = []
     for i in A:
         if isinstance(i,list): rt.extend(flatten(i))
@@ -303,14 +363,14 @@ def parseromslog(fname):
     simulation
 
     Args
-        fname:  log file name
+        fname (string): name of file with ROMS standard output
 
     Returns:
-        dictionary object with the following keys:
-            cleanrun:   True if simulation ran without errors
-            blowup:     True if simulation blew up
-            laststep:   Index of last step recorded
-            lasthis:    Name of last history file defined
+        (dict) with the following keys:
+            cleanrun (boolean): True if simulation ran without errors
+            blowup (boolean): True if simulation blew up
+            laststep (int): Index of last step recorded
+            lasthis (string): Name of last history file defined
     """
 
     with open(fname, 'r') as f:
