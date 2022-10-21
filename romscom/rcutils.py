@@ -117,7 +117,7 @@ def list2str(tmp, consecstep=-99999):
             all(isinstance(x, bool)  for x in tmp) or
             all(isinstance(x, int)   for x in tmp) or
             all(isinstance(x, str)   for x in tmp)):
-        warnings.warn("Mixed data types found in list; skipping string conversion")
+        warnings.warn(f"Mixed data types found in list ({tmp}); skipping string conversion", stacklevel=2)
         return tmp
 
     if isinstance(tmp[0], str):
