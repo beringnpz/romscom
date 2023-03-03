@@ -334,7 +334,7 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
                     ocean['DT'] = dtslow
 
         tend = min(enddate, endslow)
-        ocean['NTIMES'] = tend - ocean['DSTART']
+        ocean['NTIMES'] = tend - tini
 
         # Set names for output files
 
@@ -378,7 +378,7 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
         # so, we'll exit now
 
         if (not rsim['cleanrun']) & (not rsim['blowup']):
-            print('  Similation block terminated with error')
+            print('  Simulation block terminated with error')
             return 'error'
 
         # Did it blow up?  If it did so during a slow-step period, we'll exit

@@ -1,0 +1,79 @@
+#==============================================================================
+#
+# The YAML ROMS input format mimics that of ROMS standard input (e.g., roms.in)
+# files, but using a more flexible format that is both human-readable and more
+# easily machine-parsable than the standard input format.  
+#
+# These files are intended to be used with the ROMS Communication (romscom) 
+# toolbox.
+#
+# Input parameters can be entered in (almost) any order (but there are a few 
+# exceptions, like the tiling parameters, so I suggest maintaining the original 
+# order.)  Comments are preceded by a # sign and are ignored on reading. Most 
+# values follow standard YAML format.  Parameters should be entered as 
+# dictionary entries, with the parameter name as key.  Note that unlike ROMS 
+# standard input, indentation is important in the YAML format, and all parameter
+# keywords should be left-justified.
+#
+# Integers are distinguished from floating point numbers by the presence or 
+# absence of decimal points (e.g., 1 = integer, 1.0 = float).
+# 
+# Lists of parameters should be entered for keywords that expect multiple 
+# values.  These can either be entered across multiple lines: 
+#
+# AKT_BAK:
+#   - 1.0e-6
+#   - 1.0e-6
+#   - 5.0e-6
+#   - 5.0e-6
+#
+# or as "flow collections" on a single line:
+#
+# AKT_BAK: [1.0e-6, 1.0e-6, 5.0e-6, 5.0e-6]
+#
+# or across multiple lines:
+#
+# AKT_BAK: [1.0e-6, 1.0e-6,
+#           5.0e-6, 5.0e-6]
+#  
+# The above three examples will all be interpreted identically.
+#
+# NetCDF filename parameters can accept "multiple filenames", where a single 
+# input dataset is split across several files.  These are marked by vertical bar 
+# separators (|) in the ROMS standard input.  In the YAML format, these should 
+# be entered as nested arrays, e.g,:
+#
+# NFFILES: 6
+# FRCNAME: 
+#    - [my_lwrad_year1.nc, my_lwrad_year2.nc]
+#    - [my_swrad_year1.nc, my_swrad_year2.nc]
+#    - [my_winds_year1.nc, 
+#       my_winds_year2.nc]
+#    - [my_Pair_year1.nc, 
+#       my_Pair_year2.nc]
+#    - - my_Qair_year1.nc
+#      - my_Qair_year2.nc
+#    - - my_Tair_year1.nc
+#      - my_Tair_year2.nc
+#
+# Again, all list syntaxes are valid, and may be used interchangeably as 
+# demonstrated here.
+#
+# Parameters with nested indices (e.g. Hout(idUvel), Hout(idVvel)) are 
+# represented as dictionaries, with the nested indices as keys, e.g.:
+# 
+# Hout:
+#   idUvel: TRUE       # u                  3D U-velocity
+#   idVvel: TRUE       # v                  3D V-velocity
+#
+#==============================================================================
+
+# In multiple levels of nesting or multiple connected domains step-ups,       
+# "Ngrids" entries are expected for some of these parameters. In such case,   
+# the order of the entries for a parameter is critical. It must follow the    
+# same order (1:Ngrids) as in the state variable declaration.  In the ROMS 
+# standard input format, these values are marked by a "==" plural after the 
+# KEYWORD instead of a "=".  List any of the less common *non-plural* KEYWORDS 
+# here so that they can be formatted accordingly later.
+
+no_plural: []
