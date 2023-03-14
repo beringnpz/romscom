@@ -334,7 +334,7 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
                     ocean['DT'] = dtslow
 
         tend = min(enddate, endslow)
-        ocean['NTIMES'] = tend - tini
+        ocean['NTIMES'] = tend - ocean['DSTART']
 
         # Set names for output files
 
