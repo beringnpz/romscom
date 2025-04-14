@@ -9,7 +9,6 @@ functions.  Not exposed to the user by default.
 import glob
 import os
 import re
-import sys
 import warnings
 from collections import OrderedDict
 from datetime import datetime, timedelta
