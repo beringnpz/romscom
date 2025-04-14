@@ -53,7 +53,7 @@ def stringifyvalues(d, compress=False):
 
     Args:
         d (dict): ROMS parameter dictionary
-        compress (logical, optional): True to compress repreated values (e.g., 
+        compress (logical, optional): True to compress repeated values (e.g., 
             T T T -> 3*T), False (default) to leave as is.
 
     Returns:
@@ -446,7 +446,7 @@ def simfolders(simdir, create=False, permissions=0o755):
     """
     Generate folder path names for the 3 I/O folders used by runtodate
     
-    Generate strings for, and if requested, create folder fors ROMS text input 
+    Generate strings for, and if requested, create folder for ROMS text input 
     and output.  This 3-folder system is used by the runtodate function.  Note 
     that the In folder is intended for the auto-generated standard input files 
     created by runtodate; while this can be a covenient location to place other 
