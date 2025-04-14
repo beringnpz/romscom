@@ -6,14 +6,16 @@ a focus on ROMS standard input and similar ascii-formatted input files.
 """
 
 import copy
-from datetime import datetime, timedelta
-import os
-import glob
-import netCDF4 as nc
-import math
 import csv
-import sys
+import glob
+import math
+import os
 import subprocess
+import sys
+from datetime import datetime, timedelta
+
+import netCDF4 as nc
+
 import romscom.rcutils as r
 
 

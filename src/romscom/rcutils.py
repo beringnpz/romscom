@@ -6,16 +6,18 @@ functions.  Not exposed to the user by default.
 """
 
 
-from collections import OrderedDict
-import yaml
-import numpy as np
-import sys
-from datetime import datetime, timedelta
 import glob
 import os
-import netCDF4 as nc
 import re
+import sys
 import warnings
+from collections import OrderedDict
+from datetime import datetime, timedelta
+
+import netCDF4 as nc
+import numpy as np
+import yaml
+
 
 def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
     """
