@@ -1,7 +1,7 @@
 """
 romscom utility module
 
-Provides a number of small helper functions used by the top-level romscom 
+Provides a number of small helper functions used by the top-level romscom
 functions.  Not exposed to the user by default.
 """
 
@@ -30,10 +30,10 @@ def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
 
     usage example:
     ordered_load(stream, yaml.SafeLoader)
-    
+
     Returns:
         (OrderedDict)
-    
+
     """
 
     class OrderedLoader(Loader):
@@ -49,10 +49,10 @@ def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
 def bool2str(x):
     """
     Formats input boolean as string 'T' or 'F'
-    
+
     Args:
         x (logical)
-    
+
     Returns:
         (string) T or F, corresponding to True or False, respectively
     """
@@ -105,10 +105,10 @@ def list2str(tmp, consecstep=-99999):
     Convert list of bools, floats, or integers to string
 
     Args:
-        tmp (list): a list of either all bools, all floats, all integers, or all 
+        tmp (list): a list of either all bools, all floats, all integers, or all
             strings
-        consecstep (numeric): step size to use for compression.  
-            Default = -99999, i.e. no compression; use 0 for ROMS-style 
+        consecstep (numeric): step size to use for compression.
+            Default = -99999, i.e. no compression; use 0 for ROMS-style
             compression (i.e. T T T F -> 3*T F).  Not applicable to string lists.
 
     Returns:
@@ -184,11 +184,11 @@ def checkforstring(x, prefix=''):
 def formatkeyvalue(kw, val, singular):
     """
     Format dictionary entries as ROMS parameter assignments
-    
+
     Args:
         kw (string): key
         val (string): stringified value
-        singular (list of strings): list of keys that should be treated as 
+        singular (list of strings): list of keys that should be treated as
             unvarying across ROMS grids (i.e. uses a = assignment vs ==)
     """
     if kw in singular:
@@ -212,7 +212,7 @@ def parserst(filebase):
     Returns:
         (dict) with the following keys:
             lastfile (string): full path to last restart file
-            cnt (int): restart counter of last file incremented by 1 (i.e. count 
+            cnt (int): restart counter of last file incremented by 1 (i.e. count
                 you would want to restart with in runtodate)
     """
     allrst = sorted(glob.glob(os.path.join(filebase + "_??_rst.nc")))
@@ -248,13 +248,13 @@ def parserst(filebase):
 def fieldsaretime(d):
     """
     True if all time-related fields are in datetime/timedelta format
-    
+
     Args:
         d (dict): parameter dictionary
-    
+
     Returns:
-        (boolean): True if all time-related fields are in datetime/timedelta 
-        format, False if all are numeric.  Raises exception if a mix is 
+        (boolean): True if all time-related fields are in datetime/timedelta
+        format, False if all are numeric.  Raises exception if a mix is
         found.
     """
     timeflds = timefieldlist(d)
@@ -279,15 +279,15 @@ def fieldsaretime(d):
 def timefieldlist(d):
     """
     Get list of time-related dictionary keys
-    
+
     Args:
         d (dict): parameter dictionary
-    
+
     Returns:
         (list of strings) keys in d that are time-related
     """
-    
-    
+
+
     timeflds = ['NTIMES', 'NTIMES_ANA', 'NTIMES_FCT',
                 'NRST', 'NSTA', 'NFLT', 'NINFO', 'NHIS', 'NAVG', 'NAVG2', 'NDIA',
                 'NQCK', 'NTLM', 'NADJ', 'NSFF', 'NOBC',
@@ -304,16 +304,16 @@ def timefieldlist(d):
 
 def inputfilesexist(ocean):
     """
-    Check that all ROMS input files exist.  If a filename starts with the string 
-    "placeholder", it is ignored in this check (this allows you to keep unused 
-    parameters in the YAML files, but clearly indicates that these files will 
+    Check that all ROMS input files exist.  If a filename starts with the string
+    "placeholder", it is ignored in this check (this allows you to keep unused
+    parameters in the YAML files, but clearly indicates that these files will
     not be required)
-    
+
     Args:
         ocean (dict): parameter dictionary
-    
+
     Returns:
-        (boolean): True if all files exist (or are marked as placeholders), 
+        (boolean): True if all files exist (or are marked as placeholders),
         False otherwise
     """
 
@@ -341,21 +341,21 @@ def inputfilesexist(ocean):
 def flatten(A):
     """
     Recursively flatten a list of lists (of lists of lists...)
-    
+
     Args:
         A (list) list that may contains nested lists
-    
+
     Returns:
-        (list) contents of A where all sub-lists have been flattened to a single 
+        (list) contents of A where all sub-lists have been flattened to a single
             level
-    
+
     """
     rt = []
     for i in A:
         if isinstance(i,list): rt.extend(flatten(i))
         else: rt.append(i)
     return rt
-    
+
 def parseromslog(fname):
     """
     Parse ROMS standard output log for some details
@@ -403,3 +403,68 @@ def parseromslog(fname):
                         lasthis = tmp[-1]
 
     return {'cleanrun': cleanrun, 'blowup': blowup, 'laststep': step, 'lasthis':lasthis}
+
+
+def findclosesttime(folder, targetdate, pattern='*his*.nc'):
+    """
+    Search folder for history file with time closest to the target date
+
+    Args:
+        folder: folder holding output of a BESTNPZ ROMS simulation,
+                with history files matching the pattern *his*.nc.
+                Alternatively, can be a list of history filenames
+                (useful if you want to include a smaller subset from
+                within a folder that can't be isolated via pattern)
+        targetdate: datenumber, target date
+        pattern (string): pattern-matching string appended to folder name
+                as search string to identify history files
+                Default = '*his*.nc'
+
+    Returns:
+        dictionary with the following keys/values:
+            filename:   full path to history file including nearest date
+            idx:        time index within that file (0-based) of nearest
+                        date
+            dt:         timedelta, time between nearest date and target
+                        date
+            unit:       time units used in history file
+            cal:        calendar used by history file
+    """
+
+    if (type(folder) is str) and os.path.isdir(folder):
+        hisfiles = glob.glob(os.path.join(*(folder, pattern)))
+    else:
+        hisfiles = folder
+
+    f = nc.Dataset(hisfiles[0], 'r')
+    tunit = f.variables['ocean_time'].units
+    tcal = f.variables['ocean_time'].calendar
+
+    dtmin = []
+
+    d = {}
+    for fn in hisfiles:
+        try:
+            f = nc.Dataset(fn, 'r')
+            time = nc.num2date(f.variables['ocean_time'][:], units=tunit, calendar=tcal)
+
+            dt = abs(time - targetdate)
+
+            if not d:
+                d['filename'] = fn
+                d['idx'] = np.argmin(dt)
+                d['dt'] = dt[d['idx']]
+                d['time'] = time[d['idx']]
+            else:
+                if min(dt) < d['dt']:
+                    d['filename'] = fn
+                    d['idx'] = np.argmin(dt)
+                    d['dt'] = dt[d['idx']]
+                    d['time'] = time[d['idx']]
+        except:
+            pass
+
+    d['unit'] = tunit
+    d['cal'] = tcal
+
+    return d
