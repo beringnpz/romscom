@@ -28,9 +28,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = [
-  
-]
+dependencies = ["netCDF4", "numpy", "pyyaml"]
 
 [project.urls]
 Documentation = "https://github.com/beringnpz/romscom/#readme"
