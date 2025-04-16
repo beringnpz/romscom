@@ -1,19 +1,32 @@
 # romscom/romscom.py
 
-"""ROMS Communication Module primary functions
+"""**ROMS Communication Module primary functions**
 
-This module provides a number of functions designed to manipulate ROMS I/O, with
-a focus on ROMS standard input and similar ascii-formatted input files.
+This module holds the primary functions expected to be called by end-users in a
+typical romscom workflow, which includes importing ROMS parameters from .yaml files,
+manipulating values as needed for an experiment, and then exporting to ROMS .in
+files:
 
-The module contains the following functions
+- `readparamfile(filename,...)` reads a parameter YAML file into an ordered
+  dictionary
+- `stringifyvalues(d,...)` reformats the values in a parameter dictionary to
+  ROMS syntax strings
+- `dict2standardin(d,...)` converts a parameter dictionary to standard input
+  text, and optionally writes to file
+- `converttimes(d,direction)` converts time-related parameter fields between ROMS
+  format and datetimes/timedeltas.
 
-- `readparamfile(filename,...)` reads a parameter YAML file into an ordered dictionary
-- `stringifyvalues(d,...)` reformats the values in a parameter dictionary to ROMS syntax strings
-- `dict2standardin(d,...)` converts a parameter dictionary to standard input text, and optionally writes to file
-- `runtodate(ocean,simdir,simname,enddate,...)` sets up I/O and runs ROMS simulation through indicated date, with options to restart and work past blowups
-- `simfolders(simdir)` generates folder path names for, and optionally creates, the 3 I/O folders used by runtodate
-- `setoutfilenames(ocean,base,...) resets the values of output file name parameters in a dictionary to use a systematic naming scheme
-- `converttimes(d,direction) converts time-related parameter fields between ROMS format and datetimes/timedeltas.
+Additional functions focus on a specific ROMS workflow; this includes a standard
+folder setup and file-naming conventions that facilitate robust automation of
+simulations.
+
+- `runtodate(ocean,simdir,simname,enddate,...)` sets up I/O and runs ROMS
+  simulation through indicated date, with options to restart and work past
+  blowups
+- `simfolders(simdir)` generates folder path names for, and optionally creates,
+  the 3 I/O folders used by runtodate
+- `setoutfilenames(ocean,base,...)` resets the values of output file name
+  parameters in a ROMS parameter dictionary to use a systematic naming scheme
 """
 
 import copy
@@ -71,7 +84,7 @@ def stringifyvalues(d, compress=False):
 
     Returns:
         (dict): deep copy of d with all values replaced by ROMS-formatted
-        strings
+            strings
     """
 
     if compress:
@@ -476,17 +489,13 @@ def simfolders(simdir, create=False, permissions=0o755):
             0o755
     
     Returns:
-        (dict): with values for the following keys:
+        (dict): with the following fields:
 
-            - 'out' (string): path to folder where ROMS netCDF output will be
-              placed
-            - 'in' (string): path to folder for romscom-generated ROMS text
-              input 
-                 files
-            - 'log' (string): path to folder for standard error and standard
-              output 
-                files
-    
+            Key        |Value type|Value description
+            -----------|----------|-----------------
+            `out`      |`string`  | path to folder where ROMS netCDF output will be placed
+            `in`       |`string`  | path to folder for romscom-generated ROMS text input files
+            `log`      |`string`  | path to folder for standard error and standard output files
     """
 
     outdir = os.path.join(simdir, "Out")

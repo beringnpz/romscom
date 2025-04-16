@@ -1,8 +1,11 @@
-"""
-romscom utility module
+"""**ROMS Communication Module utility functions**
 
-Provides a number of small helper functions used by the top-level romscom
-functions.  Not exposed to the user by default.
+This module provides a number of small helper functions used by the primary romscom
+functions.
+
+- `ordered_load(stream,...)` ensures YAML dictionary loads preserve order across different python versions
+- `bool2str(x)` formats a scalar boolean as 'T'/'F'
+- `float2str(x)` formats a float as a double-precision string
 """
 
 import glob
@@ -31,7 +34,7 @@ def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
     ordered_load(stream, yaml.SafeLoader)
 
     Returns:
-        (OrderedDict)
+        (OrderedDict): dictionary
 
     """
 
@@ -53,7 +56,7 @@ def bool2str(x):
         x (logical)
 
     Returns:
-        (string) T or F, corresponding to True or False, respectively
+        (string): 'T' or 'F', corresponding to True or False, respectively
     """
     if not isinstance(x, bool):
         return x
@@ -65,10 +68,10 @@ def float2str(x):
     Formats input float as Fortran-style double-precision string
 
     Args:
-        x (float)
+        x (float): input value
 
     Returns:
-        (string) x in Fortran double-precision syntax (e.g., "1.0d0")
+        (string): x in Fortran double-precision syntax (e.g., "1.0d0")
     """
     if not isinstance(x, float):
         return
@@ -88,11 +91,15 @@ def consecutive(data, stepsize=0):
             grouping. Default = 0, i.e. identical values grouped
 
     Returns:
-        list of lists, values grouped.
+        (list of lists): values grouped.
 
-    Example:
-        consecutive([1, 1, 1, 2, 2, 4, 5]) -> [[1, 1, 1], [2, 2], [4], [5]]
-        consecutive([1, 1, 1, 2, 2, 4, 5], 1) -> [[1], [1], [1, 2], [2], [4, 5]]
+    Examples:
+
+        >>> consecutive([1, 1, 1, 2, 2, 4, 5])
+        [[1, 1, 1], [2, 2], [4], [5]]
+
+        >>> consecutive([1, 1, 1, 2, 2, 4, 5], 1)
+        [[1], [1], [1, 2], [2], [4, 5]]
     """
     data = np.array(data)
     tmp = np.split(data, np.where(np.diff(data) != stepsize)[0]+1)
@@ -111,7 +118,7 @@ def list2str(tmp, consecstep=-99999):
             compression (i.e. T T T F -> 3*T F).  Not applicable to string lists.
 
     Returns:
-        (string) ROMS-appropriate string version of list values
+        (string): ROMS-appropriate string version of list values
     """
     if not (all(isinstance(x, float) for x in tmp) or
             all(isinstance(x, bool)  for x in tmp) or
@@ -153,7 +160,7 @@ def multifile2str(tmp):
         tmp (string or list of strings): names of files and multi-files
 
     Returns:
-        (string) ROMS multi-file formatted as string
+        (string): ROMS multi-file formatted as string
     """
 
     for idx in range(0, len(tmp)):
@@ -165,10 +172,14 @@ def multifile2str(tmp):
     newstr = delim.join(tmp)
     return newstr
 
-
 def checkforstring(x, prefix=''):
     """
-    Check that all dictionary entries have been stringified
+    Check that all dictionary entries have been stringified, and print the keys cooresponding
+    to non-stringified values (primary diagnostic)
+
+    Args:
+        x (dict): ROMS parameter dictionary
+        prefix (string, optional): prefix applied to printout of non-stringified value's key
     """
     for ky in x.keys():
         if isinstance(x[ky], dict):
@@ -179,7 +190,6 @@ def checkforstring(x, prefix=''):
                     (all(isinstance(i,str) for i in x[ky])))):
                 print('{}{}'.format(prefix, ky))
 
-
 def formatkeyvalue(kw, val, singular):
     """
     Format dictionary entries as ROMS parameter assignments
@@ -189,12 +199,14 @@ def formatkeyvalue(kw, val, singular):
         val (string): stringified value
         singular (list of strings): list of keys that should be treated as
             unvarying across ROMS grids (i.e. uses a = assignment vs ==)
+
+    Returns:
+        (string): key/value as a line of text, e.g. 'key == value'
     """
     if kw in singular:
         return '{:s} = {}\n'.format(kw,val)
     else:
         return '{:s} == {}\n'.format(kw,val)
-
 
 def parserst(filebase):
     """
@@ -209,10 +221,12 @@ def parserst(filebase):
         filebase (string): base name for restart files (can include full path)
 
     Returns:
-        (dict) with the following keys:
-            lastfile (string): full path to last restart file
-            cnt (int): restart counter of last file incremented by 1 (i.e. count
-                you would want to restart with in runtodate)
+        (dict): with the following keys:
+
+            Key        |Value type|Value description
+            -----------|----------|-----------------
+            `lastfile` |`string`  |full path to last restart file
+            `cnt`      |`int`     |restart counter of last file incremented by 1 (i.e. count you would want to restart with in runtodate)
     """
     allrst = sorted(glob.glob(os.path.join(filebase + "_??_rst.nc")))
 
@@ -242,8 +256,6 @@ def parserst(filebase):
 
     return {'lastfile': rst, 'count': cnt}
 
-
-
 def fieldsaretime(d):
     """
     True if all time-related fields are in datetime/timedelta format
@@ -253,8 +265,10 @@ def fieldsaretime(d):
 
     Returns:
         (boolean): True if all time-related fields are in datetime/timedelta
-        format, False if all are numeric.  Raises exception if a mix is
-        found.
+            format, False if all are numeric.  
+        
+    Raises:
+        Exception: if a mix of numeric and datetime/timedelta values are found
     """
     timeflds = timefieldlist(d)
 
@@ -280,12 +294,11 @@ def timefieldlist(d):
     Get list of time-related dictionary keys
 
     Args:
-        d (dict): parameter dictionary
+        d (dict): ROMS parameter dictionary
 
     Returns:
-        (list of strings) keys in d that are time-related
+        (list of strings): keys in d that are time-related
     """
-
 
     timeflds = ['NTIMES', 'NTIMES_ANA', 'NTIMES_FCT',
                 'NRST', 'NSTA', 'NFLT', 'NINFO', 'NHIS', 'NAVG', 'NAVG2', 'NDIA',
@@ -309,11 +322,11 @@ def inputfilesexist(ocean):
     not be required)
 
     Args:
-        ocean (dict): parameter dictionary
+        ocean (dict): ROMS parameter dictionary
 
     Returns:
         (boolean): True if all files exist (or are marked as placeholders),
-        False otherwise
+            False otherwise
     """
 
     fkey = ['GRDNAME','ININAME','ITLNAME','IRPNAME','IADNAME','FWDNAME',
@@ -342,10 +355,10 @@ def flatten(A):
     Recursively flatten a list of lists (of lists of lists...)
 
     Args:
-        A (list) list that may contains nested lists
+        A (list): list that may contains nested lists
 
     Returns:
-        (list) contents of A where all sub-lists have been flattened to a single
+        (list): contents of A where all sub-lists have been flattened to a single
             level
 
     """
@@ -357,20 +370,21 @@ def flatten(A):
 
 def parseromslog(fname):
     """
-    Parse ROMS standard output log for some details
-
-    This function extracts details about the success (or not) of a ROMS
+    Parse ROMS standard output log for some details about the success (or not) of a ROMS
     simulation
 
     Args
         fname (string): name of file with ROMS standard output
 
     Returns:
-        (dict) with the following keys:
-            cleanrun (boolean): True if simulation ran without errors
-            blowup (boolean): True if simulation blew up
-            laststep (int): Index of last step recorded
-            lasthis (string): Name of last history file defined
+        (dict): dictionary with the following fields:
+
+            Key        |Value type|Value description
+            -----------|----------|-----------------
+            `cleanrun` |`boolean` | True if simulation ran without errors
+            `blowup`   |`boolean` | True if simulation blew up
+            `laststep` |`int`     | Index of last step recorded
+            `lasthis`  |`string`  | Name of last history file defined
     """
 
     with open(fname, 'r') as f:
@@ -403,31 +417,30 @@ def parseromslog(fname):
 
     return {'cleanrun': cleanrun, 'blowup': blowup, 'laststep': step, 'lasthis':lasthis}
 
-
 def findclosesttime(folder, targetdate, pattern='*his*.nc'):
     """
     Search folder for history file with time closest to the target date
 
     Args:
-        folder: folder holding output of a BESTNPZ ROMS simulation,
-                with history files matching the pattern *his*.nc.
-                Alternatively, can be a list of history filenames
-                (useful if you want to include a smaller subset from
-                within a folder that can't be isolated via pattern)
-        targetdate: datenumber, target date
+        folder (string): pathname to folder holding output of a BESTNPZ ROMS
+            simulation, with history files matching the pattern provided.
+            Alternatively, can be a list of history filenames (useful if you
+            want to include a smaller subset from within a folder that can't be
+            isolated via pattern)
+        targetdate (datetime): target date
         pattern (string): pattern-matching string appended to folder name
-                as search string to identify history files
-                Default = '*his*.nc'
+            as search string to identify history files Default = '*his*.nc'
 
     Returns:
-        dictionary with the following keys/values:
-            filename:   full path to history file including nearest date
-            idx:        time index within that file (0-based) of nearest
-                        date
-            dt:         timedelta, time between nearest date and target
-                        date
-            unit:       time units used in history file
-            cal:        calendar used by history file
+        (dict): with the following keys/values:
+
+            Key       |Value type  |Value description
+            ---       |----------  |-----------------
+            `filename`|`string`    |full path to history file including nearest date
+            `idx`     |`int`       |time index within that file (0-based) of nearest date
+            `dt`      |`timedelta` |time between nearest date and target date
+            `unit`    |`string`    |time units used in history file
+            `cal`     |`string`    |calendar used by history file
     """
 
     if (type(folder) is str) and os.path.isdir(folder):
