@@ -5,7 +5,6 @@ Provides a number of small helper functions used by the top-level romscom
 functions.  Not exposed to the user by default.
 """
 
-
 import glob
 import os
 import re

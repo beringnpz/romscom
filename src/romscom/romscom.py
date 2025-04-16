@@ -1,8 +1,19 @@
-"""
-romscom: ROMS Communication Module
+# romscom/romscom.py
+
+"""ROMS Communication Module primary functions
 
 This module provides a number of functions designed to manipulate ROMS I/O, with
 a focus on ROMS standard input and similar ascii-formatted input files.
+
+The module contains the following functions
+
+- `readparamfile(filename,...)` reads a parameter YAML file into an ordered dictionary
+- `stringifyvalues(d,...)` reformats the values in a parameter dictionary to ROMS syntax strings
+- `dict2standardin(d,...)` converts a parameter dictionary to standard input text, and optionally writes to file
+- `runtodate(ocean,simdir,simname,enddate,...)` sets up I/O and runs ROMS simulation through indicated date, with options to restart and work past blowups
+- `simfolders(simdir)` generates folder path names for, and optionally creates, the 3 I/O folders used by runtodate
+- `setoutfilenames(ocean,base,...) resets the values of output file name parameters in a dictionary to use a systematic naming scheme
+- `converttimes(d,direction) converts time-related parameter fields between ROMS format and datetimes/timedeltas.
 """
 
 import copy
@@ -134,7 +145,6 @@ def stringifyvalues(d, compress=False):
                     newdict[x] = stringifyvalues(newdict[x], compress=compress)
 
     return newdict
-
 
 def dict2standardin(d, compress=False, file=None):
     """
@@ -442,7 +452,6 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
     print('Simulation completed through specified end date')
     return 'success'
 
-
 def simfolders(simdir, create=False, permissions=0o755):
     """
     Generate folder path names for the 3 I/O folders used by runtodate
@@ -538,7 +547,6 @@ def setoutfilenames(ocean, base, cnt=1, outtype="all", addcounter="none"):
             ocean[fl+'NAME'] = f"{base}_{cnt:02d}_{fl.lower()}.nc"
         else:
             ocean[fl+'NAME'] = f"{base}_{fl.lower()}.nc"
-
 
 def converttimes(d, direction):
     """
