@@ -2,10 +2,6 @@
 
 This module provides a number of small helper functions used by the primary romscom
 functions.
-
-- `ordered_load(stream,...)` ensures YAML dictionary loads preserve order across different python versions
-- `bool2str(x)` formats a scalar boolean as 'T'/'F'
-- `float2str(x)` formats a float as a double-precision string
 """
 
 import glob
