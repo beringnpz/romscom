@@ -35,8 +35,15 @@ Documentation = "https://github.com/beringnpz/romscom/#readme"
 Issues = "https://github.com/beringnpz/romscom/issues"
 Source = "https://github.com/beringnpz/romscom"
 
+# [tool.hatch.version]
+
+
 [tool.hatch.version]
+version-source = "calver"
 path = "src/romscom/__about__.py"
+
+[tool.hatch.version.calver]
+format = "YYYY.MM.PATCH"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
@@ -63,3 +70,6 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.hatch.metadata]
+allow-direct-references = true
