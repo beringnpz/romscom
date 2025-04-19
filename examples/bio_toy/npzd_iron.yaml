@@ -1,0 +1,339 @@
+#  Nutrient-Phytoplankton-Zooplankton-Detritus Biological Model Parameters.
+#
+# git $Id$
+#========================================================= Hernan G. Arango ===
+#  Copyright (c) 2002-2025 The ROMS Group                                     #
+#    Licensed under a MIT/X style license                                     #
+#    See License_ROMS.md                                                      #
+#==============================================================================
+#                                                                             #
+# Input parameters can be entered in ANY order, provided that the parameter   #
+# KEYWORD (usually, upper case) is typed correctly followed by "="  or "=="   #
+# symbols. Any comment lines are allowed and must begin with an exclamation   #
+# mark (#) in column one.  Comments may  appear to the right of a parameter   #
+# specification to improve documentation.  Comments will be ignored  during   #
+# reading.  Blank lines are also allowed and ignored. Continuation lines in   #
+# a parameter specification are allowed and must be preceded by a backslash   #
+# (\).  In some instances, more than one value is required for a parameter.   #
+# If fewer values are provided, the  last value  is assigned for the entire   #
+# parameter array.  The multiplication symbol (*),  without blank spaces in   #
+# between, is allowed for a parameter specification.  For example, in a two   #
+# grids nested application:                                                   #
+#                                                                             #
+#    AKT_BAK == 2*1.0d-6  2*5.0d-6              # m2/s                        #
+#                                                                             #
+# indicates that the first two entries of array AKT_BAK,  in fortran column-  #
+# major order, will have the same value of "1.0d-6" for grid 1,  whereas the  #
+# next two entries will have the same value of "5.0d-6" for grid 2.           #
+#                                                                             #
+# In multiple levels of nesting and/or multiple connected domains  step-ups,  #
+# "Ngrids" entries are expected for some of these parameters.  In such case,  #
+# the order of the entries for a parameter is extremely important.  It  must  #
+# follow the same order (1:Ngrids) as in the state variable declaration. The  #
+# USER may follow the above guidelines for specifying his/her values.  These  #
+# parameters are marked by "==" plural symbol after the KEYWORD.              #
+#                                                                             #
+#==============================================================================
+
+# In multiple levels of nesting or multiple connected domains step-ups,       
+# "Ngrids" entries are expected for some of these parameters. In such case,   
+# the order of the entries for a parameter is critical. It must follow the    
+# same order (1:Ngrids) as in the state variable declaration.  In the ROMS 
+# standard input format, these values are marked by a "==" plural after the 
+# KEYWORD instead of a "=".  List any of the less common *non-plural* KEYWORDS 
+# here so that they can be formatted accordingly later.
+
+no_plural: []
+
+#==============================================================================
+# NOTICE: Input parameter units are specified within brackets and default
+# ******  values are specified within braces.
+#
+# Switch to control the computation of biology within nested and/or multiple
+# connected grids.
+
+Lbiology: True
+
+# Maximum number of iterations to achieve convergence of the nonlinear
+# solution.
+
+BioIter: 1
+
+# Initial concentration for analytical uniform initial conditions.
+# [millimole/meter3].
+
+BioIni:
+  iNO3_: 17.0                          # nitrate
+  iPhyt:  1.0                          # phytoplankton
+  iZoop:  1.0                          # zooplankton
+  iSDet:  1.0                          # detritus
+  iFphy:  0.0                          # iron in phytoplankton
+  iFdis:  0.0                          # dissolved iron
+
+# Fraction of shortwave radiation that is photosynthetically active
+# (nondimensional), {0.43d0}.
+
+PARfrac: 0.43
+
+# Light attenuation due to seawater [1/m], {0.067d0}.
+
+AttSW: 0.067                          # k_ext
+
+# Light attenuation due to phytoplankton, self-shading coefficient,
+# [m2/millimole_N], {0.0095d0}.
+
+AttPhy: 0.04                         # k_extP
+
+# Phytoplankton, initial slope of P-I curve [m2/W], {0.025d0}.
+
+PhyIS: 0.02                          # alpha
+
+# Nitrate uptake rate, [1/day], {1.5d0}.
+
+Vm_NO3: 1.0                           # Vm
+
+# Phytoplankton mortality rate to Detritus pool [1/day], {0.1d0}.
+
+PhyMRD: 0.1                            # sigmaD
+
+# Phytoplankton mortality rate to Nitrogen pool [1/day], {0.0d0}.
+
+PhyMRN: 0.0                            # sigmaN
+
+# Inverse half-saturation for phytoplankton nitrate uptake
+# [1/(millimole_N m-3)], {1.0d0}.
+
+K_NO3: 1.0                           # k_N
+
+# Ivlev constant for zooplankton grazing parameterization
+# [Nondimensional], {14*0.06=0.84d0}
+
+Ivlev: 0.84
+
+# Zooplankton grazing rate, [1/day], {0.52}.
+
+ZooGR: 0.65                          # R_m
+
+# Zooplankton excretion efficiency to Detritus pool [nondimensional],
+# {0.3d0}
+
+ZooEED: 0.0                           # gammaD
+
+# Zooplankton excretion efficiency to Nitrogen pool [nondimensional],
+# {0.3d0}
+
+ZooEEN: 0.3                           # gammaN
+
+# Zooplankton mortality rate to Detritus pool, [1/day], {0.0d0}.
+
+ZooMRD: 0.145                         # zetaD
+
+# Zooplankton mortality rate to Nitrogen pool, [1/day], {0.145d0}.
+
+ZooMRN: 0.0                           # zetaN
+
+# Detritus remineralization rate, [1/day], {0.1d0}.
+
+DetRR: 1.0                           # delta
+
+# Phytoplankton sinking rate, [m/day], {0.0d0}.
+
+wPhy: 0.0                           # wP
+
+# Detrital sinking rate, [m/day], {8.0d0}.
+
+wDet: 8.0                           # wD
+
+# Iron uptake timescale, [day], {1.0d0}.
+
+T_Fe: 1.0                           # T_Fe
+
+# Empirical Fe:C power, [nondimensional], {0.6d0}.
+
+A_Fe: 0.6                           # A_Fe
+
+# Empirical Fe:C coefficient, [1/M-C], {64.0d0}.
+
+B_Fe: 64.0                          # B_Fe
+
+# Fe:C at F=0.5, [muM-Fe/M-C], {16.9d0}.
+
+K_FeC: 16.9                         # K_FeC
+
+# Fe remineralization rate, [1/day], {1.0d0}.
+
+FeRR: 0.5                           # FeRR
+
+# If applicable, dissolved Fe relaxation (nudging) parameters to simulate
+# Fe source over the shelf (h <= FeHmin).
+
+FeHmin: 200.0                       # minimum depth (m)
+FeNudgTime: 5.0                     # nudging time (days)
+FeMax: 2.0                          # Fe value (mmole/m3) to nudge
+
+# Harmonic/biharmonic horizontal diffusion of biological tracer for
+# nonlinear model and adjoint-based algorithms: [1:NBT,Ngrids].
+
+TNU2: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0]                         # m2/s
+TNU4: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]                         # m4/s
+
+ad_TNU2: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]                      # m2/s
+ad_TNU4: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]                      # m4/s
+
+# Logical switches (TRUE/FALSE) to increase/decrease horizontal diffusivity
+# in specific areas of the application domain (like sponge areas) for the
+# desired grid: [Ngrids]
+
+LtracerSponge: [False, False, False, False, False, False]
+
+# Vertical mixing coefficients for biological tracers for nonlinear
+# model and basic state scale factor in adjoint-based algorithms:
+# [1:NBT,Ngrids].
+
+AKT_BAK: [1.0e-6, 1.0e-6, 1.0e-6, 1.0e-6, 1.0e-6, 1.0e-6]    # m2/s
+
+ad_AKT_fac: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]                   # nondimensional
+
+# Nudging/relaxation time scales, inverse scales will be computed
+# internally: [1:NBT,Ngrids].
+
+TNUDG: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]                        # days
+
+# Set horizontal and vertical advection schemes for biological tracers.
+# A different advection scheme is allowed for each tracer. For example,
+# a positive-definite (monotonic) algorithm can be activated for
+# salinity and biological tracers, while a different one is set for
+# temperature. [1:NAT+NPT,Ngrids] values are expected.
+#
+#   Keyword    Advection Algorithm
+#
+#   A4         4th-order Akima (horizontal/vertical)
+#   C2         2nd-order centered differences (horizontal/vertical)
+#   C4         4th-order centered differences (horizontal/vertical)
+#   HSIMT      3th-order HSIMT-TVD (horizontal/vertical)
+#   MPDATA     recursive flux corrected MPDATA (horizontal/vertical)
+#   SPLINES    parabolic splines (only vertical)
+#   SU3        split third-order upstream (horizontal/vertical)
+#   U3         3rd-order upstream-biased (only horizontal)
+#
+# The user has the option of specifying the full Keyword or the first
+# two letters, regardless if using uppercase or lowercase. If nested
+# grids, specify values for each grid.
+
+Hadvection: HSIMT                          # idbio(:), compact
+
+Vadvection: HSIMT                          # idbio(:), compact
+
+# Adjoint-based algorithms can have different horizontal and schemes
+# for active and inert tracers.
+
+ad_Hadvection: U3                             # idbio(:), compact
+
+ad_Vadvection: C4                             # idbio(:), compact
+
+# Set lateral boundary conditions keyword. Notice that a value is expected
+# for each boundary segment per nested grid for each state variable.
+#
+# The biological tracer variables require [1:4,1:NBT,Ngrids] values. The
+# boundary order is: 1=west, 2=south, 3=east, and 4=north. That is,
+# anticlockwise starting at the western boundary.
+#
+# The keyword is case insensitive and usually has three characters. However,
+# it is possible to have compound keywords, if applicable. For example, the
+# keyword "RadNud" implies radiation boundary condition with nudging. This
+# combination is usually used in active/passive radiation conditions.
+#
+# NOTICE: It is possible to specify the lateral boundary conditions for
+# ======  all biological tracers in a compact form with a single entry.
+# If so, all the biological tracers are assumed to have the same boundary
+# condition as in the single entry.
+#
+#   Keyword    Lateral Boundary Condition Type
+#
+#   Cla        Clamped                                _____N_____     j=Mm
+#   Clo        Closed                                |     4     |
+#   Gra        Gradient                              |           |
+#   Nes        Nested                              1 W           E 3
+#   Nud        Nudging                               |           |
+#   Per        Periodic                              |_____S_____|
+#   Rad        Radiation                                   2          j=1
+#                                                   i=1         i=Lm
+#                   W       S       E       N
+#                   e       o       a       o
+#                   s       u       s       r
+#                   t       t       t       t
+#                           h               h
+#
+#                   1       2       3       4
+
+LBC:
+  isTvar:        [Per,    Per,    Per,    Per]     # idbio(:), compact
+
+# Adjoint-based algorithms can have different lateral boundary
+# conditions keywords.
+
+ad_LBC:
+  isTvar:        [Per,    Per,    Per,    Per]     # idbio(:), compact
+
+# Logical switches (TRUE/FALSE) to activate biological tracers point
+# Sources/Sinks (like river runoff) and to specify which tracer variables
+# to consider: [NBT,Ngrids] values are expected. See glossary below for
+# details.
+
+LtracerSrc: [False, False, False, False, False, False]
+
+# Logical switches (TRUE/FALSE) to read and process biological tracer
+# climatology fields: [NBT,Ngrids] values are expected. See glossary below
+# for details.
+
+LtracerCLM: [False, False, False, False, False, False]
+
+# Logical switches (TRUE/FALSE) to nudge the desired biological tracer
+# climatology field. If not analytical climatology fields, users need to
+# turn on the logical switches above to process the fields from the
+# climatology NetCDF file that are needed for nudging; [NBT,Ngrids]
+# values are expected. See glossary below for details.
+
+LnudgeTCLM: [False, False, False, False, False, False]
+
+# Logical switches (TRUE/FALSE) to activate writing of biological fields
+# into HISTORY output files: [1:NBT,Ngrids].
+
+Hout:
+  idTvar: [True,  True,  True,  True,  True,  True ] # ..., NO3, ...           biological tracer
+  idTsur: [False, False, False, False, False, False] # ..., NO3_sflux, ...     surface tracer flux
+
+# Logical switches (TRUE/FALSE) to activate writing of biological fields
+# into QUICKSAVE output files: [1:NBT,Ngrids].
+
+Qout:
+  idTvar: [False, False, False, False, False, False] # ..., NO3, ...           biological tracer
+  idsurT: [False, False, False, False, False, False] # ..., NO3_sur, ...       surface biological tracer
+  idTsur: [False, False, False, False, False, False] # ..., NO3_sflux, ...     surface tracer flux
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged fields
+# into AVERAGE output file: [1:NBT,Ngrids].
+
+Aout:
+  idTvar: [True,  True,  True,  True,  True,  True ]  # ..., NO3, ...           biological tracer
+  idTTav: [False, False, False, False, False, False]  # ..., NO3_2, ...         quadratic <t*t> tracer terms
+  idUTav: [False, False, False, False, False, False]  # ..., u_NO3, ...         quadratic <u*t> tracer terms
+  idVTav: [False, False, False, False, False, False]  # ..., v_NO3, ...         quadratic <v*t> tracer terms
+  iHUTav: [False, False, False, False, False, False]  # ..., Huon_NO3, ...      tracer volume flux, <Huon*t>
+  iHVTav: [False, False, False, False, False, False]  # ..., Hvom_NO3, ...      tracer volume flux, <Hvom*t>
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged,
+# biological tracer diagnostic terms into DIAGNOSTIC output file:
+# [1:NBT,Ngrids].
+
+Dout:
+  iTrate: [True,  True,  True,  True,  True,  True ] # ..., NO3_rate, ...      time rate of change
+  iThadv: [True,  True,  True,  True,  True,  True ] # ..., NO3_hadv, ...      horizontal total advection
+  iTxadv: [True,  True,  True,  True,  True,  True ] # ..., NO3_xadv, ...      horizontal XI-advection
+  iTyadv: [True,  True,  True,  True,  True,  True ] # ..., NO3_yadv, ...      horizontal ETA-advection
+  iTvadv: [True,  True,  True,  True,  True,  True ] # ..., NO3_vadv, ...      vertical advection
+  iThdif: [True,  True,  True,  True,  True,  True ] # ..., NO3_hdiff, ...     horizontal total diffusion
+  iTxdif: [True,  True,  True,  True,  True,  True ] # ..., NO3_xdiff, ...     horizontal XI-diffusion
+  iTydif: [True,  True,  True,  True,  True,  True ] # ..., NO3_ydiff, ...     horizontal ETA-diffusion
+  iTsdif: [True,  True,  True,  True,  True,  True ] # ..., NO3_sdiff, ...     horizontal S-diffusion
+  iTvdif: [True,  True,  True,  True,  True,  True ] # ..., NO3_vdiff, ...     vertical diffusion

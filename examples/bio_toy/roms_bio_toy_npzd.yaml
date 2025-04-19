@@ -1,0 +1,1211 @@
+#
+#  ROMS Standard Input parameters.
+#
+# git $Id$
+#========================================================= Hernan G. Arango ===
+#  Copyright (c) 2002-2025 The ROMS Group                                     #
+#    Licensed under a MIT/X style license                                     #
+#    See License_ROMS.md                                                      #
+#==============================================================================
+#                                                                             #
+# Input parameters can be entered in ANY order, provided that the parameter   #
+# KEYWORD (usually, upper case) is typed correctly followed by "="  or "=="   #
+# symbols. Any comment lines are allowed and must begin with an exclamation   #
+# mark (#) in column one.  Comments may appear to the right of a parameter    #
+# specification to improve documentation.  Comments are ignored during        #
+# reading.  Blank lines are also allowed and ignored. Continuation lines in   #
+# a parameter specification are allowed if preceded by a backslash (\).  In   #
+# some instances, more than one value is required for a parameter.  If fewer  #
+# values are provided, the last value is assigned for the entire parameter    #
+# array.  The multiplication symbol (*),  without blank spaces in between,    #
+# is allowed for a parameter specification. For example, in two grids nested  #
+# application:                                                                #
+#                                                                             #
+#    AKT_BAK == 2*1.0d-6  2*5.0d-6              # m2/s                        #
+#                                                                             #
+# indicates that the first two entries of array AKT_BAK,  in fortran column-  #
+# major order, will have the same value of "1.0d-6" for grid 1,  whereas the  #
+# next two entries will have the same value of "5.0d-6" for grid 2.           #
+#                                                                             #
+# In multiple levels of nesting or multiple connected domains step-ups,       #
+# "Ngrids" entries are expected for some of these parameters. In such case,   #
+# the order of the entries for a parameter is critical. It must follow the    #
+# same order (1:Ngrids) as in the state variable declaration. The USER may    #
+# follow the above guidelines for specifying his/her values. These parameters #
+# are marked by "==" plural symbol after the KEYWORD.                         #
+#                                                                             #
+# Multiple NetCDF files are allowed for input field(s). It is useful when     #
+# splitting input data (climatology,  boundary,  forcing) time records into   #
+# several files (say monthly, annual, etc.). In this case, each multiple      #
+# filename entry lines need to end with the vertical bar (|) symbol. For      #
+# example:                                                                    #
+#                                                                             #
+#    NFFILES == 6                          # number of forcing files          #
+#                                                                             #
+#    FRCNAME == my_lwrad_year1.nc |                                           #
+#               my_lwrad_year2.nc \                                           #
+#               my_swrad_year1.nc |                                           #
+#               my_swrad_year2.nc \                                           #
+#               my_winds_year1.nc |                                           #
+#               my_winds_year2.nc \                                           #
+#               my_Pair_year1.nc  |                                           #
+#               my_Pair_year2.nc  \                                           #
+#               my_Qair_year1.nc  |                                           #
+#               my_Qair_year2.nc  \                                           #
+#               my_Tair_year1.nc  |                                           #
+#               my_Tair_year2.nc                                              #
+#                                                                             #
+# Notice that NFFILES is 6 and not 12. There are 6 uniquely different fields  #
+# in the file list,  we  DO NOT  count file entries followed by the vertical  #
+# bar symbol.  This is because  multiple file  entries are processed in ROMS  #
+# with derived type structures.                                               #
+#                                                                             #
+#==============================================================================
+
+# In multiple levels of nesting or multiple connected domains step-ups,       
+# "Ngrids" entries are expected for some of these parameters. In such case,   
+# the order of the entries for a parameter is critical. It must follow the    
+# same order (1:Ngrids) as in the state variable declaration.  In the ROMS 
+# standard input format, these values are marked by a "==" plural after the 
+# KEYWORD instead of a "=".  List any of the less common *non-plural* KEYWORDS 
+# here so that they can be formatted accordingly later.
+
+no_plural: [TITLE, MyAppCPP, VARNAME, Ngrids, NestLayers, GridsInLayer, 
+            Nbed, NAT, NPT, NCS, NNS, 
+            ERstr, ERend, Nouter, Ninner, Nsaddle, Nintervals, 
+            NEV, NCV
+            LmultiGST, LrstGST, MaxIterGST, NGST, 
+            Ritz_tol
+            RHO0, BVF_BAK, Lmodel,
+            DSTART, TIDE_START, TIME_REF, 
+            NSLICE, Z_SLICE, NUSER, USER,
+            INP_LIB, OUT_LIB, 
+            PIO_METHOD, PIO_IOTASKS, PIO_STRIDE, PIO_BASE, PIO_AGGREG, 
+            PIO_REAR, PIO_REARRCOM, PIO_REARRDIR, PIO_C2I_HS, PIO_C2I_Send,
+            PIO_C2I_Preq, PIO_I2C_HS, PIO_I2C_Send, PIO_I2C_Preq,  
+            NC_SHUFFLE, NC_DEFLATE, NC_DLEVEL]
+
+#==============================================================================
+
+# Application title.
+
+TITLE: "One-dimension (vertical) Biology Toy, NPZD models"
+
+# C-preprocessing Flag.
+
+MyAppCPP: BIO_TOY
+
+# Input variable information file name.  This file needs to be processed
+# first so all information arrays can be initialized properly.
+
+VARNAME: ../External/varinfo.yaml
+
+# Number of nested grids.
+
+Ngrids: 1
+
+# Number of grid nesting layers.  This parameter is used to allow refinement
+# and composite grid combinations.
+
+NestLayers: 1
+
+# Number of grids in each nesting layer [1:NestLayers].
+
+GridsInLayer: 1
+
+# Grid dimension parameters. See notes below in the Glossary for how to set
+# these parameters correctly.
+
+Lm: 4             # Number of I-direction INTERIOR RHO-points
+Mm: 4             # Number of J-direction INTERIOR RHO-points
+N: 30             # Number of vertical levels
+
+Nbed:  0          # Number of sediment bed layers
+
+NAT: 2            # Number of active tracers (usually, 2)
+NPT: 0            # Number of inactive passive tracers
+NCS: 0            # Number of cohesive (mud) sediment tracers
+NNS: 0            # Number of non-cohesive (sand) sediment tracers
+
+# Domain decomposition parameters for serial, distributed-memory or
+# shared-memory configurations used to determine tile horizontal range
+# indices (Istr,Iend) and (Jstr,Jend), [1:Ngrids].
+
+NtileI: 1                               # I-direction partition
+NtileJ: 1                               # J-direction partition
+
+# Set horizontal and vertical advection schemes for active and inert
+# tracers. A different advection scheme is allowed for each tracer.
+# For example, a positive-definite (monotonic) algorithm can be activated
+# for salinity and inert tracers, while a different one is set for
+# temperature. [1:NAT+NPT,Ngrids] values are expected.
+#
+#   Keyword    Advection Algorithm
+#
+#   A4         4th-order Akima (horizontal/vertical)
+#   C2         2nd-order centered differences (horizontal/vertical)
+#   C4         4th-order centered differences (horizontal/vertical)
+#   HSIMT      3th-order HSIMT-TVD (horizontal/vertical)
+#   MPDATA     recursive flux corrected MPDATA (horizontal/vertical)
+#   SPLINES    parabolic splines (only vertical)
+#   SU3        split third-order upstream (horizontal/vertical)
+#   U3         3rd-order upstream-biased (only horizontal)
+#
+# The user has the option of specifying the full Keyword or the first
+# two letters, regardless if using uppercase or lowercase. If nested
+# grids, specify values for each grid (see glossary below).
+
+Hadvection: 
+  - U3                             # temperature
+  - HSIMT                          # salinity
+
+Vadvection:
+  - C4                             # temperature
+  - HSIMT                          # salinity
+
+# Adjoint-based algorithms can have different horizontal and schemes
+# for active and inert tracers.
+
+ad_Hadvection:
+  - U3                             # temperature
+  - U3                             # salinity
+
+ad_Vadvection:
+  - C4                             # temperature
+  - C4                             # salinity
+
+# Set lateral boundary conditions keyword. Notice that a value is expected
+# for each boundary segment per nested grid for each state variable.
+#
+# Each tracer variable requires [1:4,1:NAT+NPT,Ngrids] values. Otherwise,
+# [1:4,1:Ngrids] values are expected for other variables. The boundary
+# order is: 1=west, 2=south, 3=east, and 4=north. That is, anticlockwise
+# starting at the western boundary.
+#
+# The keyword is case insensitive and usually has three characters. However,
+# it is possible to have compound keywords, if applicable. For example, the
+# keyword "RadNud" implies radiation boundary condition with nudging. This
+# combination is usually used in active/passive radiation conditions.
+#
+#   Keyword    Lateral Boundary Condition Type
+#
+#   Cha        Chapman_implicit (free-surface)
+#   Che        Chapman_explicit (free-surface)
+#   Cla        Clamped
+#   Clo        Closed
+#   Fla        Flather (2D momentum)                  _____N_____     j=Mm
+#   Gra        Gradient                              |     4     |
+#   Nes        Nested (refinement)                   |           |
+#   Nud        Nudging                             1 W           E 3
+#   Per        Periodic                              |           |
+#   Rad        Radiation                             |_____S_____|
+#   Red        Reduced Physics (2D momentum)               2          j=1
+#   Shc        Shchepetkin (2D momentum)            i=1         i=Lm
+#
+#                   W       S       E       N
+#                   e       o       a       o
+#                   s       u       s       r
+#                   t       t       t       t
+#                           h               h
+#
+#                   1       2       3       4
+
+LBC:
+  isFsur:        [Per,    Per,    Per,    Per]         # free-surface
+  isUbar:        [Per,    Per,    Per,    Per]         # 2D U-momentum
+  isVbar:        [Per,    Per,    Per,    Per]         # 2D V-momentum
+  isUvel:        [Per,    Per,    Per,    Per]         # 3D U-momentum
+  isVvel:        [Per,    Per,    Per,    Per]         # 3D V-momentum
+  isMtke:        [Per,    Per,    Per,    Per]         # mixing TKE
+
+  isTvar:        [Per,    Per,    Per,    Per          # temperature
+                  Per,    Per,    Per,    Per]         # salinity
+
+# Waves Effect on Currents lateral boundary conditions.
+
+  isU2Sd:        [Per,    Per,    Per,    Per]         # 2D U-Stokes
+  isV2Sd:        [Per,    Per,    Per,    Per]         # 2D V-Stokes
+  isU3Sd:        [Per,    Per,    Per,    Per]         # 3D U-Stokes
+  isV3Sd:        [Per,    Per,    Per,    Per]         # 3D V-Stokes
+
+# Adjoint-based algorithms can have different lateral boundary
+# conditions keywords.
+
+ad_LBC:
+  isFsur:        [Per,    Per,    Per,    Per]          # free-surface
+  isUbar:        [Per,    Per,    Per,    Per]          # 2D U-momentum
+  isVbar:        [Per,    Per,    Per,    Per]          # 2D V-momentum
+  isUvel:        [Per,    Per,    Per,    Per]          # 3D U-momentum
+  isVvel:        [Per,    Per,    Per,    Per]          # 3D V-momentum
+  isMtke:        [Per,    Per,    Per,    Per]          # mixing TKE
+  isTvar:        [Per,    Per,    Per,    Per           # temperature
+                  Per,    Per,    Per,    Per]          # salinity
+
+# Set lateral open boundary edge volume conservation switch for
+# nonlinear model and adjoint-based algorithms. Usually activated
+# with radiation boundary conditions to enforce global mass
+# conservation, except if tidal forcing is enabled. [1:Ngrids].
+
+VolCons:
+  west:  False                            # western  boundary
+  east:  False                            # eastern  boundary
+  south: False                            # southern boundary
+  north: False                            # northern boundary
+
+ad_VolCons:
+  west:  False                            # western  boundary
+  east:  False                            # eastern  boundary
+  south: False                            # southern boundary
+  north: False                            # northern boundary
+
+# Time-Stepping parameters.
+
+NTIMES: 1600
+DT: 540.0
+NDTFAST: 30
+
+# Number of timesteps for computing observation impacts during the
+# analysis-forecast cycle.
+
+NTIMES_ANA: 1600                               # analysis interval
+NTIMES_FCT: 1600                               # forecast interval
+
+# Model iteration loops parameters.
+
+ERstr:      1
+ERend:      1
+Nouter:     1
+Ninner:     1
+Nsaddle:    1
+Nintervals: 1
+
+# Number of eigenvalues (NEV) and eigenvectors (NCV) to compute for the
+# Lanczos/Arnoldi problem in the Generalized Stability Theory (GST)
+# analysis. NCV must be greater than NEV (see documentation below).
+
+NEV:  2                              # Number of eigenvalues
+NCV: 10                              # Number of eigenvectors
+
+# Input/Output parameters.
+
+NRREC: 0
+LcycleRST: True
+NRST: 80
+NSTA: 1
+NFLT: 1
+NINFO: 1
+
+# Output history, quicksave, average, and diagnostic files parameters.
+
+LDEFOUT: True
+NHIS: 80
+NDEFHIS: 0
+NXTR: 80
+NDEFXTR: 0
+NQCK: 0
+NDEFQCK: 0
+NTSAVG: 1
+NAVG: 80
+NDEFAVG: 0
+NTSDIA: 1
+NDIA: 80
+NDEFDIA: 0
+
+# Output tangent linear and adjoint models parameters.
+
+LcycleTLM: False
+NTLM: 80
+NDEFTLM: 0
+LcycleADJ: F
+NADJ: 80
+NDEFADJ: 0
+NSFF: 80
+NOBC: 80
+
+# GST output and check pointing restart parameters.
+
+LmultiGST:  False                               # one eigenvector per file
+LrstGST:    False                               # GST restart switch
+MaxIterGST: 500                                 # maximum number of iterations
+NGST:       10                                  # check pointing interval
+
+# Relative accuracy of the Ritz values computed in the GST analysis.
+
+Ritz_tol: 1.0e-15
+
+# Harmonic/biharmonic horizontal diffusion of tracer for nonlinear model
+# and adjoint-based algorithms: [1:NAT+NPT,Ngrids].
+
+TNU2: [0.0, 0.0]                    # m2/s
+TNU4: [0.0, 0.1]                    # m4/s
+
+ad_TNU2: [0.0, 0.0]                 # m2/s
+ad_TNU4: [0.0, 0.0]                 # m4/s
+
+# Harmonic/biharmonic, horizontal viscosity coefficient for nonlinear model
+# and adjoint-based algorithms: [Ngrids].
+
+VISC2: 50.0                          # m2/s
+VISC4: 4.0e+8                        # m4/s
+
+ad_VISC2: 0.0                        # m2/s
+ad_VISC4: 0.0                        # m4/s
+
+# Logical switches (TRUE/FALSE) to increase/decrease horizontal viscosity
+# and/or diffusivity in specific areas of the application domain (like
+# sponge areas) for the desired application grid.
+
+LuvSponge: False                              # horizontal momentum
+LtracerSponge: [False, False]                 # temperature, salinity, inert
+
+# Vertical mixing coefficients for tracers in nonlinear model and
+# basic state scale factor in adjoint-based algorithms: [1:NAT+NPT,Ngrids]
+
+AKT_BAK: [1.0e-6, 1.0e-6]                 # m2/s
+
+ad_AKT_fac: [1.0, 1.0]                    # nondimensional
+
+# Vertical mixing coefficient for momentum for nonlinear model and
+# basic state scale factor in adjoint-based algorithms: [Ngrids].
+
+AKV_BAK: 1.0e-5                          # m2/s
+
+ad_AKV_fac: 1.0                          # nondimensional
+
+# Upper threshold values to limit vertical mixing coefficients computed
+# from vertical mixing parameterizations. Although this is an engineering
+# fix, the vertical mixing values inferred from ocean observations are
+# rarely higher than this upper limit value.
+
+AKT_LIMIT: [1.0e-3, 1.0e-3]                # m2/s
+
+AKV_LIMIT: 1.0e-3                          # m2/s
+
+# Turbulent closure parameters.
+
+AKK_BAK: 5.0e-6                        # m2/s
+AKP_BAK: 5.0e-6                        # m2/s
+TKENU2:  0.0                           # m2/s
+TKENU4:  0.0                           # m4/s
+
+# Generic length-scale turbulence closure parameters.
+
+GLS_P:  3.0                           # K-epsilon
+GLS_M:  1.5
+GLS_N: -1.0
+GLS_Kmin: 7.6e-6
+GLS_Pmin: 1.0e-12
+
+GLS_CMU0: 0.5477
+GLS_C1: 1.44
+GLS_C2: 1.92
+GLS_C3M: -0.4
+GLS_C3P: 1.0
+GLS_SIGK: 1.0
+GLS_SIGP: 1.30
+
+# Constants used in surface turbulent kinetic energy flux computation.
+
+CHARNOK_ALPHA: 1400.0    # Charnock surface roughness
+ZOS_HSIG_ALPHA: 0.5      # roughness from wave amplitude
+SZ_ALPHA: 0.25           # roughness from wave dissipation
+CRGBAN_CW: 100.0         # Craig and Banner wave breaking
+
+# Waves Effect on Current wave dissipation action scale:
+#
+#   [0.0] All wave dissipation goes to breaking and none to roller
+#   [1.0] All wave dissipation goes to roller and none to breaking
+
+WEC_ALPHA: 0.0
+
+# Constants used in momentum stress computation.
+
+RDRG: 3.0e-04             # m/s
+RDRG2: 3.0e-03            # nondimensional
+Zob: 0.02                 # m
+Zos: 0.02                 # m
+
+# Height (m) of atmospheric measurements for Bulk fluxes parameterization.
+
+BLK_ZQ: 10.0              # air humidity
+BLK_ZT: 10.0              # air temperature
+BLK_ZW: 10.0              # winds
+
+# Minimum depth for wetting and drying.
+
+DCRIT: 0.10               # m
+
+# Various parameters.
+
+WTYPE: 1
+LEVSFRC: 15
+LEVBFRC: 1
+
+# Set vertical, terrain-following coordinates transformation equation and
+# stretching function (see below for details), [1:Ngrids].
+
+Vtransform: 1                          # transformation equation
+Vstretching: 1                         # stretching function
+
+# Vertical S-coordinates parameters (see below for details), [1:Ngrids].
+
+THETA_S: 5.0                     # surface stretching parameter
+THETA_B: 0.4                     # bottom  stretching parameter
+TCLINE: 50.0                     # critical depth (m)
+
+# Mean Density and Brunt-Vaisala frequency.
+
+RHO0: 1025.0                    # kg/m3
+BVF_BAK: 1.0e-5                 # 1/s2
+
+# If tide generating forces, set switch (T/F) to apply a 18.6-year lunar
+# nodal correction to equilibrium tide constituents.
+
+Lnodal:  True
+
+# Time-stamp assigned for model initialization, reference time
+# origin for tidal forcing, and model reference time for output
+# NetCDF units attribute.
+
+DSTART: 0.0                      # days
+TIDE_START: 0.0                  # days
+TIME_REF: 20010101.5             # yyyymmdd.dd
+
+# Nudging/relaxation time scales, inverse scales will be computed
+# internally, [1:Ngrids].
+
+TNUDG: [0.0, 0.0]                # days
+ZNUDG:  0.0                      # days
+M2NUDG: 0.0                      # days
+M3NUDG: 0.0                      # days
+
+# Factor between passive (outflow) and active (inflow) open boundary
+# conditions, [1:Ngrids]. If OBCFAC > 1, nudging on inflow is stronger
+# than on outflow (recommended).
+
+OBCFAC: 0.0                      # nondimensional
+
+# Linear equation of State parameters:
+
+R0: 1027.0                   # kg/m3
+T0: 10.0                     # Celsius
+S0: 35.0                     # nondimensional
+TCOEF: 1.7e-4                # 1/Celsius
+SCOEF: 7.6e-4                # nondimensional
+
+# Slipperiness parameter: 1.0 (free slip) or -1.0 (no slip)
+
+GAMMA2: 1.0
+
+# Logical switches (TRUE/FALSE) to activate horizontal momentum transport
+# point Sources/Sinks (like river runoff transport) and mass point
+# Sources/Sinks (like volume vertical influx), [1:Ngrids].
+
+LuvSrc: False                          # horizontal momentum transport
+LwSrc:  False                          # volume vertical influx
+
+# Logical switches (TRUE/FALSE) to activate tracers point Sources/Sinks
+# (like river runoff) and to specify which tracer variables to consider:
+# [1:NAT+NPT,Ngrids].  See glossary below for details.
+
+LtracerSrc: [False, False]             # temperature, salinity, inert
+
+# Logical switches (TRUE/FALSE) to read and process climatology fields.
+# See glossary below for details.
+
+LsshCLM: False                         # sea-surface height
+Lm2CLM: False                          # 2D momentum
+Lm3CLM: False                          # 3D momentum
+
+LtracerCLM: [False, False]             # temperature, salinity, inert
+
+# Logical switches (TRUE/FALSE) to nudge the desired climatology field(s).
+# If not analytical climatology fields, users need to turn ON the logical
+# switches above to process the fields from the climatology NetCDF file
+# that are needed for nudging. See glossary below for details.
+
+LnudgeM2CLM: False                          # 2D momentum
+LnudgeM3CLM: False                          # 3D momentum
+
+LnudgeTCLM: [False, False]                  # temperature, salinity, inert
+
+# Starting (DstrS) and ending (DendS) day for adjoint sensitivity forcing.
+# DstrS must be less or equal to DendS. If both values are zero, their
+# values are reset internally to the full range of the adjoint integration.
+
+DstrS: 0.0                      # starting day
+DendS: 0.0                      # ending day
+
+# Starting and ending vertical levels of the 3D adjoint state variables
+# whose sensitivity is required.
+
+KstrS: 1                          # starting level
+KendS: 1                          # ending level
+
+# Logical switches (TRUE/FALSE) to specify the adjoint state variables
+# whose sensitivity is required.
+
+Lstate:
+  isFsur: False                        # free-surface
+  isUbar: False                        # 2D U-momentum
+  isVbar: False                        # 2D V-momentum
+  isUvel: False                        # 3D U-momentum
+  isVvel: False                        # 3D V-momentum
+  isWvel: False                        # 3D W-momentum
+  isTvar: [False, False]               # NT tracers
+
+# Logical switches (TRUE/FALSE) to specify the state variables for
+# which Forcing Singular Vectors or Stochastic Optimals is required.
+
+Fstate:
+  isFsur: False                        # free-surface
+  isUbar: False                        # 2D U-momentum
+  isVbar: False                        # 2D V-momentum
+  isUvel: False                        # 3D U-momentum
+  isVvel: False                        # 3D V-momentum
+  isTvar: [False, False]               # NT tracers
+  isUstr: True                         # surface U-stress
+  isVstr: True                         # surface V-stress
+  isTsur: [False, False]               # NT surface tracers flux
+
+# Stochastic Optimals time decorrelation scale (days) assumed for
+# red noise processes.
+
+SO_decay: 2.0                          # days
+
+# Stochastic Optimals surface forcing standard deviation for
+# dimensionalization.
+
+SO_dev:
+  isFsur: 1.0                   # free-surface
+  isUbar: 1.0                   # 2D U-momentum
+  isVbar: 1.0                   # 2D V-momentum
+  isUvel: 1.0                   # 3D U-momentum
+  isVvel: 1.0                   # 3D V-momentum
+  isTvar: [1.0, 1.0]            # NT tracers
+  isUstr: 1.0                   # surface U-stress
+  isVstr: 1.0                   # surface V-stress
+  isTsur: [1.0, 1.0]            # NT surface tracers flux
+
+# Logical switches (TRUE/FALSE) to activate writing of fields into
+# HISTORY output file.
+
+Hout:
+  idUvel: True            # u                  3D U-velocity
+  idVvel: True            # v                  3D V-velocity
+  idu3dE: False           # u_eastward         3D U-eastward  at RHO-points
+  idv3dN: False           # v_northward        3D V-northward at RHO-points
+  idWvel: True            # w                  3D W-velocity
+  idOvel: True            # omega              omega vertical velocity
+  idOvil: False           # omega_implicit     omega implicit vertical velocity
+  idUbar: True            # ubar               2D U-velocity
+  idVbar: True            # vbar               2D V-velocity
+  idu2dE: False           # ubar_eastward      2D U-eastward  at RHO-points
+  idv2dN: False           # vbar_northward     2D V-northward at RHO-points
+  idFsur: True            # zeta               free-surface
+  idBath: False           # bath               time-dependent bathymetry
+  idTvar: [True, True]    # temp, salt         temperature and salinity
+  idUzsl: False           # u_slice            U-velocity depth slices
+  idVzsl: False           # v_slice            V-velocity depth slices
+  idUzsE: False           # u_eastward_slice   U-eastward  velocity depth slices
+  idVzsN: False           # v_northward_slice  V-northward velocity depth slices
+  id3dPV: False           # pvorticity         potential vorticity at PSI-points
+  id3dRV: False           # rvorticity         relative  vorticity at PSI-points
+  idPVzs: False           # pvorticity_slice   potential vorticity depth slices
+  idRVzs: False           # rvorticity_slice   relative  vorticity depth slices
+  idzslT: [False, False]  # temp_slice, ...    temperature and salinity depth slices
+  idpthR: False           # z_rho              time-varying depths of RHO-points
+  idpthU: False           # z_u                time-varying depths of U-points
+  idpthV: False           # z_v                time-varying depths of V-points
+  idpthW: False           # z_w                time-varying depths of W-points
+  idUsms: False           # sustr              surface U-stress
+  idVsms: False           # svstr              surface V-stress
+  idUbms: False           # bustr              bottom U-stress
+  idVbms: False           # bvstr              bottom V-stress
+  idUbrs: False           # bustrc             bottom U-current stress
+  idVbrs: False           # bvstrc             bottom V-current stress
+  idUbws: False           # bustrw             bottom U-wave stress
+  idVbws: False           # bvstrw             bottom V-wave stress
+  idUbcs: False           # bustrcwmax         bottom max wave-current U-stress
+  idVbcs: False           # bvstrcwmax         bottom max wave-current V-stress
+  idUVwc: False           # bstrcwmax          bottom max wave-current stress magnitude
+  idUbot: False           # Ubot               bed wave orbital U-velocity
+  idVbot: False           # Vbot               bed wave orbital V-velocity
+  idUbur: False           # Ur                 bottom U-velocity above bed
+  idVbvr: False           # Vr                 bottom V-velocity above bed
+  idWztw: False           # zetaw              WEC_VF quasi-static sea level adjustment
+  idWqsp: False           # qsp                WEC_VF quasi-static pressure adjustment
+  idWbeh: False           # bernoulli_head     WEC_VF Bernoulli head adjustment
+  idU2rs: False           # ubar_wec_stress    WEC 2D U-stress
+  idV2rs: False           # vbar_wec_stress    WEC 2D V-stress
+  idU3rs: False           # u_wec_stress       WEC 3D U-stress
+  idV3rs: False           # v_wec_stress       WEC 3D V-stress
+  idU2Sd: False           # ubar_stokes        2D Stokes U-velocity
+  idV2Sd: False           # vbar_stokes        2D Stokes V-velocity
+  idU3Sd: False           # u_stokes           3D Stokes U-velocity
+  idV3Sd: False           # v_stokes           3D Stokes V-velocity
+  idW3St: False           # w_stokes           3D Stokes W-velocity
+  idW3Sd: False           # omega_stokes       3D Stokes omega-velocity
+  idWamp: False           # Hwave              wave significat height
+  idWlen: False           # Lwave              wave mean wavelength
+  idWlep: False           # Lwavep             wave peak wavelength
+  idWdir: False           # Dwave              wave mean direction
+  idWdip: False           # Dwavep             wave peak direction
+  idWptp: False           # Pwave_top          wave surface period
+  idWpbt: False           # Pwave_bot          wave bottom period
+  idWorb: False           # Uwave_rms          wave bottom orbital velocity
+  idWbrk: False           # Wave_break         wave breaking (percent)
+  idUwav: False           # uWave              wave depth-averaged U-velocity
+  idVwav: False           # vWave              wave depth-averaged V-velocity
+  idWdif: False           # Dissip_fric        wave dissipation from bottom friction
+  idWdib: False           # Dissip_break       wave dissipation from breaking
+  idWdiw: False           # Dissip_wcap        wave dissipation from whitecapping
+  idWdis: False           # Dissip_roller      wave roller dissipation
+  idWrol: False           # roller_action      wave roller action density
+  idPair: False           # Pair               surface air pressure
+  idTair: False           # Tair               near surface air temperature
+  idUair: False           # Uwind              near surface U-wind
+  idVair: False           # Vwind              near surface V-wind
+  idUaiE: False           # Uwind_eastward     near surface Eastward  U-wind
+  idVaiN: False           # Vwind_northward    near surface Northward V-wind
+  idTsur: [False, False]  # shflux, ssflux     surface net heat and salt flux
+  idLhea: False           # latent             latent heat flux
+  idShea: False           # sensible           sensible heat flux
+  idLrad: False           # lwrad              longwave radiation flux
+  idSrad: False           # swrad              shortwave radiation flux
+  idEmPf: False           # EminusP            E-P flux
+  idevap: False           # evaporation        evaporation rate
+  idrain: False           # rain               precipitation rate
+  idDano: True            # rho                density anomaly
+  idVvis: True            # AKv                vertical viscosity
+  idTdif: True            # AKt                vertical T-diffusion
+  idSdif: True            # AKs                vertical Salinity diffusion
+  idHsbl: True            # Hsbl               depth of surface boundary layer
+  idHbbl: True            # Hbbl               depth of bottom boundary layer
+  idMtke: False           # tke                turbulent kinetic energy
+  idMtls: False           # gls                turbulent length scale
+
+# Logical switches (TRUE/FALSE) to activate writing of extra inert passive
+# tracers other than biological and sediment tracers into the HISTORY
+# output file. An inert passive tracer is one that it is only advected and
+# diffused. Other processes are ignored. These tracers include, for example,
+# dyes, pollutants, oil spills, etc. NPT values are expected. However, these
+# switches can be activated using compact parameter specification.
+
+  inert: T       # dye_01, ...        inert passive tracers
+
+# Logical switches (TRUE/FALSE) to activate writing of fields into
+# QUICKSAVE output file.
+
+Qout:
+  idUvel: False          # u                  3D U-velocity
+  idVvel: False          # v                  3D V-velocity
+  idu3dE: False          # u_eastward         3D U-eastward  at RHO-points
+  idv3dN: False          # v_northward        3D V-northward at RHO-points
+  idWvel: False          # w                  3D W-velocity
+  idOvel: False          # omega              omega vertical velocity
+  idUbar: True           # ubar               2D U-velocity
+  idVbar: True           # vbar               2D V-velocity
+  idu2dE: False          # ubar_eastward      2D U-eastward  at RHO-points
+  idv2dN: False          # vbar_northward     2D V-northward at RHO-points
+  idFsur: True           # zeta               free-surface
+  idBath: True           # bath               time-dependent bathymetry
+  idTvar: [False, False] # temp, salt         temperature and salinity
+  idUsur: True           # u_sur              surface level U-velocity
+  idVsur: True           # v_sur              surface level V-velocity
+  idUsuE: True           # u_sur_eastward     surface level U-eastward  velocity
+  idVsuN: True           # v_sur_northward    surface level V-northward velocity
+  idsurT: [True, True]   # temp_sur, salt_sur surface level temperature and salinity
+  idUzsl: False          # u_slice            U-velocity depth slices
+  idVzsl: False          # v_slice            V-velocity depth slices
+  idUzsE: False          # u_eastward_slice   U-eastward  velocity depth slices
+  idVzsN: False          # v_northward_slice  V-northward velocity depth slices
+  idPVzs: False          # pvorticity_slice   potential vorticity depth slices
+  idRVzs: False          # rvorticity_slice   relative vorticity depth slices
+  idzslT: [False, False] # temp_slice, ...    temperature and salinity depth slices
+  idpthR: False          # z_rho              time-varying depths of RHO-points
+  idpthU: False          # z_u                time-varying depths of U-points
+  idpthV: False          # z_v                time-varying depths of V-points
+  idpthW: False          # z_w                time-varying depths of W-points
+  idUsms: False          # sustr              surface U-stress
+  idVsms: False          # svstr              surface V-stress
+  idUbms: False          # bustr              bottom U-stress
+  idVbms: False          # bvstr              bottom V-stress
+  idUbrs: False          # bustrc             bottom U-current stress
+  idVbrs: False          # bvstrc             bottom V-current stress
+  idUbws: False          # bustrw             bottom U-wave stress
+  idVbws: False          # bvstrw             bottom V-wave stress
+  idUbcs: False          # bustrcwmax         bottom max wave-current U-stress
+  idVbcs: False          # bvstrcwmax         bottom max wave-current V-stress
+  idUVwc: False          # bstrcwmax          bottom max wave-current stress magnitude
+  idUbot: False          # Ubot               bed wave orbital U-velocity
+  idVbot: False          # Vbot               bed wave orbital V-velocity
+  idUbur: False          # Ur                 bottom U-velocity above bed
+  idVbvr: False          # Vr                 bottom V-velocity above bed
+  idWztw: False          # zetaw              WEC_VF quasi-static sea level adjustment
+  idWqsp: False          # qsp                WEC_VF quasi-static pressure adjustment
+  idWbeh: False          # bernoulli_head     WEC_VF Bernoulli head adjustment
+  idU2rs: False          # ubar_wec_stress    WEC 2D U-stress
+  idV2rs: False          # vbar_wec_stress    WEC 2D V-stress
+  idU3rs: False          # u_wec_stress       WEC 3D U-stress
+  idV3rs: False          # v_wec_stress       WEC 3D V-stress
+  idU2Sd: False          # ubar_stokes        2D Stokes U-velocity
+  idV2Sd: False          # vbar_stokes        2D Stokes V-velocity
+  idU3Sd: False          # u_stokes           3D Stokes U-velocity
+  idV3Sd: False          # v_stokes           3D Stokes V-velocity
+  idW3St: False          # w_stokes           3D Stokes W-velocity
+  idW3Sd: False          # omega_stokes       3D Stokes omega-velocity
+  idWamp: False          # Hwave              wave significant height
+  idWlen: False          # Lwave              wave mean wavelength
+  idWlep: False          # Lwavep             wave peak wavelength
+  idWdir: False          # Dwave              wave mean direction
+  idWdip: False          # Dwavep             wave peak direction
+  idWptp: False          # Pwave_top          wave surface period
+  idWpbt: False          # Pwave_bot          wave bottom period
+  idWorb: False          # Uwave_rms          wave bottom orbital velocity
+  idWbrk: False          # Wave_break         wave breaking (percent)
+  idUwav: False          # uWave              wave depth-averaged U-velocity
+  idVwav: False          # vWave              wave depth-averaged V-velocity
+  idWdif: False          # Dissip_fric        wave dissipation from bottom friction
+  idWdib: False          # Dissip_break       wave dissipation from breaking
+  idWdiw: False          # Dissip_wcap        wave dissipation from whitecapping
+  idWdis: False          # Dissip_roller      wave roller dissipation
+  idWrol: False          # roller_action      wave roller action density
+  idPair: False          # Pair               surface air pressure
+  idPBLh: False          # PBLh               atmosphere boundary layer thickness
+  idTair: False          # Tair               near surface air temperature
+  idUair: False          # Uair               near surface U-wind
+  idVair: False          # Vair               near surface V-wind
+  idUaiE: False          # Uwind_eastward     near surface Eastward  U-wind
+  idVaiN: False          # Vwind_northward    near surface Northward V-wind
+  idTsur: [False, False] # shflux, ssflux     surface net heat and salt flux
+  idLhea: False          # latent             latent heat flux
+  idShea: False          # sensible           sensible heat flux
+  idLrad: False          # lwrad              longwave radiation flux
+  idSrad: False          # swrad              shortwave radiation flux
+  idEmPf: False          # EminusP            E-P flux
+  idevap: False          # evaporation        evaporation rate
+  idrain: False          # rain               precipitation rate
+  idDano: False          # rho                density anomaly
+  idVvis: False          # AKv                vertical viscosity
+  idTdif: False          # AKt                vertical T-diffusion
+  idSdif: False          # AKs                vertical Salinity diffusion
+  idHsbl: False          # Hsbl               depth of surface boundary layer
+  idHbbl: False          # Hbbl               depth of bottom boundary layer
+  idMtke: False          # tke                turbulent kinetic energy
+  idMtls: False          # gls                turbulent length scale
+
+# Logical switches (TRUE/FALSE) to activate writing of extra inert passive
+# tracers other than biological and sediment tracers into the QUICKSAVE
+# output file. An inert passive tracer is one that it is only advected and
+# diffused. Other processes are ignored. These tracers include, for example,
+# dyes, pollutants, oil spills, etc. NPT values are expected. However, these
+# switches can be activated using compact parameter specification.
+
+  inert: False           # dye_01, ...        inert passive tracers
+  Snert: False           # dye_01_sur, ...    surface inert passive tracers
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged
+# fields into AVERAGE output file.
+
+Aout:
+  idUvel: True           # u                  3D U-velocity
+  idVvel: True           # v                  3D V-velocity
+  idu3dE: False          # u_eastward         3D U-eastward  at RHO-points
+  idv3dN: False          # v_northward        3D V-northward at RHO-points
+  idWvel: True           # w                  3D W-velocity
+  idOvel: True           # omega              omega vertical velocity
+  idUbar: True           # ubar               2D U-velocity
+  idVbar: True           # vbar               2D V-velocity
+  idu2dE: False          # ubar_eastward      2D U-eastward  at RHO-points
+  idv2dN: False          # vbar_northward     2D V-northward at RHO-points
+  idFsur: True           # zeta               free-surface
+  idBath: False          # bath               time-dependent bathymetry
+  idTvar: [True, True]   # temp, salt         temperature and salinity
+  idUsms: False          # sustr              surface U-stress
+  idVsms: False          # svstr              surface V-stress
+  idUbms: False          # bustr              bottom U-stress
+  idVbms: False          # bvstr              bottom V-stress
+  idUbrs: False          # bustrc             bottom U-current stress
+  idVbrs: False          # bvstrc             bottom V-current stress
+  idUbws: False          # bustrw             bottom U-wave stress
+  idVbws: False          # bvstrw             bottom V-wave stress
+  idUbcs: False          # bustrcwmax         bottom max wave-current U-stress
+  idVbcs: False          # bvstrcwmax         bottom max wave-current V-stress
+  idUVwc: False          # bstrcwmax          bottom max wave-current stress magnitude
+  idUbot: False          # Ubot               bed wave orbital U-velocity
+  idVbot: False          # Vbot               bed wave orbital V-velocity
+  idUbur: False          # Ur                 bottom U-velocity above bed
+  idVbvr: False          # Vr                 bottom V-velocity above bed
+  idWztw: False          # zetaw              WEC_VF quasi-static sea level adjustment
+  idWqsp: False          # qsp                WEC_VF quasi-static pressure adjustment
+  idWbeh: False          # bernoulli_head     WEC_VF Bernoulli head adjustment
+  idU2rs: False          # ubar_wec_stress    WEC 2D U-stress
+  idV2rs: False          # vbar_wec_stress    WEC 2D V-stress
+  idU3rs: False          # u_wec_stress       WEC 3D U-stress
+  idV3rs: False          # v_wec_stress       WEC 3D V-stress
+  idU2Sd: False          # ubar_stokes        2D Stokes U-velocity
+  idV2Sd: False          # vbar_stokes        2D Stokes V-velocity
+  idU3Sd: False          # u_stokes           3D Stokes U-velocity
+  idV3Sd: False          # v_stokes           3D Stokes V-velocity
+  idW3St: False          # w_stokes           3D Stokes W-velocity
+  idW3Sd: False          # omega_stokes       3D Stokes omega-velocity
+  idWamp: False          # Hwave              wave significant height
+  idWlen: False          # Lwave              wave mean wavelength
+  idWlep: False          # Lwavep             wave peak wavelength
+  idWdir: False          # Dwave              wave mean direction
+  idWptp: False          # Pwave_top          wave surface period
+  idWpbt: False          # Pwave_bot          wave bottom period
+  idWorb: False          # Uwave_rms          wave bottom orbital velocity
+  idWbrk: False          # Wave_break         wave breaking (percent)
+  idUwav: False          # uWave              wave-depth averaged U-velocity
+  idVwav: False          # vWave              wave-depth averaged V-velocity
+  idWdif: False          # Dissip_fric        wave dissipation from bottom friction
+  idWdib: False          # Dissip_break       wave dissipation from breaking
+  idWdiw: False          # Dissip_wcap        wave dissipation from whitecapping
+  idWdis: False          # Dissip_roller      wave roller dissipation
+  idWrol: False          # roller_action      wave roller action density
+  idPair: False          # Pair               surface air pressure
+  idTair: False          # Tair               near surface air temperature
+  idUair: False          # Uwind              near surface U-wind
+  idVair: False          # Vwind              near surface V-wind
+  idUaiE: False          # Uwind_eastward     near surface Eastward  U-wind
+  idVaiN: False          # Vwind_northward    near surface Northward V-wind
+  idTsur: [False, False] # shflux, ssflux     surface net heat and salt flux
+  idLhea: False          # latent             latent heat flux
+  idShea: False          # sensible           sensible heat flux
+  idLrad: False          # lwrad              longwave radiation flux
+  idSrad: False          # swrad              shortwave radiation flux
+  idevap: False          # evaporation        evaporation rate
+  idrain: False          # rain               precipitation rate
+  idDano: True           # rho                density anomaly
+  idVvis: True           # AKv                vertical viscosity
+  idTdif: True           # AKt                vertical T-diffusion
+  idSdif: True           # AKs                vertical Salinity diffusion
+  idHsbl: True           # Hsbl               depth of surface boundary layer
+  idHbbl: False          # Hbbl               depth of bottom boundary layer
+  id2dRV: False          # pvorticity_bar     2D relative vorticity
+  id3dRV: False          # pvorticity         3D relative vorticity
+  id2dPV: False          # rvorticity_bar     2D potential vorticity
+  id3dPV: False          # rvorticity         3D potential vorticity
+  idu3dD: False          # u_detided          detided 3D U-velocity
+  idv3dD: False          # v_detided          detided 3D V-velocity
+  idu2dD: False          # ubar_detided       detided 2D U-velocity
+  idv2dD: False          # vbar_detided       detided 2D V-velocity
+  idFsuD: False          # zeta_detided       detided free-surface
+  idTrcD: [False, False] # temp_detided, ...  detided temperature and salinity
+  idHUav: True           # Huon               u-volume flux, Huon
+  idHVav: True           # Hvom               v-volume flux, Hvom
+  idUUav: True           # uu                 quadratic <u*u> term
+  idUVav: True           # uv                 quadratic <u*v> term
+  idVVav: True           # vv                 quadratic <v*v> term
+  idU2av: True           # ubar2              quadratic <ubar*ubar> term
+  idV2av: True           # vbar2              quadratic <vbar*vbar> term
+  idZZav: True           # zeta2              quadratic <zeta*zeta> term
+  idTTav: [True, True]   # temp_2, ...        quadratic <t*t> tracer terms
+  idUTav: [True, True]   # u_temp, ...        quadratic <u*t> tracer terms
+  idVTav: [True, True]   # v_temp, ...        quadratic <v*t> tracer terms
+  iHUTav: [True, True]   # Huon_temp, ...     tracer volume flux, <Huon*t>
+  iHVTav: [True, True]   # Hvom_temp, ...     tracer volume flux, <Hvom*t>
+
+# Logical switches (TRUE/FALSE) to activate writing of extra inert passive
+# tracers other than biological and sediment tracers into the AVERAGE file.
+
+  inert: True            # dye_01, ...        inert passive tracers
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged,
+# 2D momentum (ubar,vbar) diagnostic terms into DIAGNOSTIC output file.
+
+Dout:
+  M2rate: True           # ubar_accel, ...    acceleration
+  M2pgrd: True           # ubar_prsgrd, ...   pressure gradient
+  M2fcor: True           # ubar_cor, ...      Coriolis force
+  M2hadv: True           # ubar_hadv, ...     horizontal total advection
+  M2xadv: True           # ubar_xadv, ...     horizontal XI-advection
+  M2yadv: True           # ubar_yadv, ...     horizontal ETA-advection
+  M2hvis: True           # ubar_hvisc, ...    horizontal total viscosity
+  M2xvis: True           # ubar_xvisc, ...    horizontal XI-viscosity
+  M2yvis: True           # ubar_yvisc, ...    horizontal ETA-viscosity
+  M2sstr: True           # ubar_sstr, ...     surface stress
+  M2bstr: True           # ubar_bstr, ...     bottom stress
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged,
+# 3D momentum (u,v) diagnostic terms into DIAGNOSTIC output file.
+
+  M3rate: True           # u_accel, ...       acceleration
+  M3pgrd: True           # u_prsgrd, ...      pressure gradient
+  M3fcor: True           # u_cor, ...         Coriolis force
+  M3hadv: True           # u_hadv, ...        horizontal total advection
+  M3xadv: True           # u_xadv, ...        horizontal XI-advection
+  M3yadv: True           # u_yadv, ...        horizontal ETA-advection
+  M3vadv: True           # u_vadv, ...        vertical advection
+  M3hrad: True           # u_hrad, ...        horizontal total radiation stress
+  M3vrad: True           # u_vrad, ...        vertical radiation stress
+  M3hvis: True           # u_hvisc, ...       horizontal total viscosity
+  M3xvis: True           # u_xvisc, ...       horizontal XI-viscosity
+  M3yvis: True           # u_yvisc, ...       horizontal ETA-viscosity
+  M3vvis: True           # u_vvisc, ...       vertical viscosity
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged,
+# Waves Effect on Currents (WEC) 2D and 3D diagnostic terms into DIAGNOSTIC
+# output file.
+
+  M2hjvf: True           # ubar_hjvf, ...     2D horizontal J vortex force
+  M2kvrf: True           # ubar_kvrf, ...     2D K vortex force
+  M2fsco: True           # ubar_fsco, ...     2D Stokes Coriolis
+  M2sstm: True           # ubar_sstm, ...     2D surface streaming
+  M2bstm: True           # ubar_bstm, ...     2D bottom streaming
+  M2wrol: True           # ubar_wrol, ...     2D wave roller acceleration
+  M2wbrk: True           # ubar_wbrk, ...     2D wave breaking
+  M2zeta: True           # ubar_zeta, ...     2D Eulerian SSH adjustment
+  M2zetw: True           # ubar_zetaw, ...    2D quasi-static SSH adjustment
+  M2zqsp: True           # ubar_zqsp, ...     2D quasi-static pressure
+  M2zbeh: True           # ubar_zbeh, ...     2D Bernoulli head adjustment
+  M2fsgr: True           # ubar_fsgr, ...     2D seagrass drag force
+  M3hjvf: True           # u_hjvf, ...        3D horizontal J vortex force
+  M3vjvf: True           # u_vjvf, ...        3D vertical J vortex force
+  M3kvrf: True           # u_kvrf, ...        3D K vortex force
+  M3fsco: True           # u_fsco, ...        3D Stokes Coriolis
+  M3sstm: True           # u_sstm, ...        3D surface streaming
+  M3bstm: True           # u_bstm, ...        3D bottom streaming
+  M3wrol: True           # u_wrol, ...        3D wave roller acceleration
+  M3wbrk: True           # u_wbrk, ...        3D wave breaking
+  M3fsgr: True           # u_fsgr, ...        3D seagrass drag force
+
+# Logical switches (TRUE/FALSE) to activate writing of time-averaged,
+# active (temperature and salinity) and passive (inert) tracer diagnostic
+# terms into DIAGNOSTIC output file: [1:NAT+NPT,Ngrids].
+
+  iTrate: [True, True]   # temp_rate, ...     time rate of change
+  iThadv: [True, True]   # temp_hadv, ...     horizontal total advection
+  iTxadv: [True, True]   # temp_xadv, ...     horizontal XI-advection
+  iTyadv: [True, True]   # temp_yadv, ...     horizontal ETA-advection
+  iTvadv: [True, True]   # temp_vadv, ...     vertical advection
+  iThdif: [True, True]   # temp_hdiff, ...    horizontal total diffusion
+  iTxdif: [True, True]   # temp_xdiff, ...    horizontal XI-diffusion
+  iTydif: [True, True]   # temp_ydiff, ...    horizontal ETA-diffusion
+  iTsdif: [True, True]   # temp_sdiff, ...    horizontal S-diffusion
+  iTvdif: [True, True]   # temp_vdiff, ...    vertical diffusion
+
+# Number of output field horizontal slices and their depths (negative, m).
+# It is possible to extract selected state fields like temperature, salinity,
+# and velocity components at a constant depth in the QUICKSAVE and HISTORY
+# NetCDF files. Use wise depth values based on dynamics and model bathymetry
+# and make sure that "NSLICE" is small (between 1 and 4) to keep the QUICKSAVE
+# file size manageable. Order "Z_SLICE" in descending values (surface to
+# bottom).
+
+NSLICE: 0
+Z_SLICE: [0.0, -50.0, -100.0]
+
+# Generic User parameters, [1:NUSER].
+
+NUSER: 0
+USER: 0.0
+
+# Input and Output files processing library to use:
+#
+#   [1] Standard NetCDF-3 or NetCDF-4 library
+#   [2] Serial or Parallel I/O with Parallel-IO (PIO) library (MPI only)
+
+INP_LIB: 1
+OUT_LIB: 1
+
+# PIO library methods for reading/writing NetCDF files:
+#
+#   [0] parallel read and write of PnetCDF (CDF-5, not recommended)
+#   [1] parallel read and write of NetCDF3 (64-bit offset)
+#   [2] serial   read and write of NetCDF3 (64-bit offset)
+#   [3] parallel read and serial write of NetCDF4/HDF5
+#   [4] parallel read and write of NETCDF4/HDF5
+
+PIO_METHOD: 2
+
+# PIO library MPI processes set-up:
+
+PIO_IOTASKS: 1              # number of I/O tasks to define
+PIO_STRIDE:  1              # stride in the MPI-ran between I/O tasks
+PIO_BASE: 0                 # offset for the first I/O task
+PIO_AGGREG: 1               # number of MPI-aggregators to use
+
+# PIO library rearranger methods for moving data between computational and I/O
+# processes:
+#
+#   [1] Box rearrangement
+#   [2] Subset rearrangement
+
+PIO_REARR: 1
+
+# PIO library rearranger flag for MPI communications between computational
+# and I/O processes:
+#
+#   [0] Point-to-Point (low-level communications)
+#   [1] Collective (high-level grouped communications)
+
+PIO_REARRCOM:  0
+
+# PIO library rearranger flow control direction flag for MPI communications
+# between computational and I/O processes:
+#
+#   [0] Enable computational to I/O processes, and vice versa
+#   [2] Enable computational to I/O processes only
+#   [3] Enable I/O to computational processes only
+#   [4] Disable flow control
+
+PIO_REARRDIR: 0
+
+# PIO rearranger options for computational to I/O processes (C2I):
+
+PIO_C2I_HS: True                 # Enable C2I handshake (T/F)
+PIO_C2I_Send: True               # Enable C2I Isends (T/F)
+PIO_C2I_Preq: 64                 # Maximum pending C2I requests
+
+# PIO rearranger options for I/O to computational processes (I2C):
+
+PIO_I2C_HS: True                 # Enable I2C handshake (T/F)
+PIO_I2C_Send: True               # Enable I2C Isends (T/F)
+PIO_I2C_Preq: 65                 # Maximum pending I2C requests
+
+# If OUT_LIB=1, NetCDF-4/HDF5 compression parameters for output files.
+
+NC_SHUFFLE: 1                 # if non-zero, turn on shuffle filter
+NC_DEFLATE: 1                 # if non-zero, turn on deflate filter
+NC_DLEVEL: 1                  # deflate level [0-9]
+
+# Input grid extraction flag and input extraction grid geometry
+# NetCDF filename. They are used to extract a history solution at
+# the desired geometry by decimation or horizontal interpolation:
+#
+#   ExtractFlag = 0                 no extraction
+#   ExtractFlag = 1                 horizontal interpolation
+#   ExtractFlag > 1                 coarsening by decimation
+#
+# If decimation, ExtracTFlag is the sampling factor. For now, use
+# ExtractFlag=2 so data is written at every other point. Notice
+# that it is required to satisfy the following criteria:
+#
+#   MOD(Lm+1, ExtractFlag) = 0
+#   MOD(Mm+1, ExtractFlag) = 0
+
+ExtractFlag: 0
+
+GRXNAME: roms_extract_grd.nc
+
+# Input NetCDF file names, [1:Ngrids].
+
+GRDNAME: Data/bio_toy_grd.nc
+ININAME: Data/bio_toy_ini_npzd.nc
+ITLNAME: /dev/null
+IRPNAME: /dev/null
+IADNAME: /dev/null
+FWDNAME: /dev/null
+ADSNAME: /dev/null
+
+# Input adjoint forcing NetCDF filenames for computing observations
+# impacts during the analysis-forecast cycle. If the forecast error
+# metric is defined in state-space, then FOInameA and FOInameB should
+# be regular adjoint forcing files just like ADSname. If the forecast
+# error metric is defined in observation space (OBS_SPACE is activated)
+# then the forecast is initialized OIFnameA and OIFnameB (specified in
+# s4dvar.in input script) will have the structure of a 4D-Var observation
+# file.
+
+FOInameA: /dev/null
+FOInameB: /dev/null
+
+# Input NetCDF filenames for the forecasts initialized from the analysis
+# of the current 4D-Var cycle (FCTnameA) and initialized from the analysis
+# of the previous 4D-Var cycle (FCTnameB).
+
+FCTnameA: /dev/null
+FCTnameB: /dev/null
+
+# Nesting grids connectivity data: contact points information. This
+# NetCDF file is special and complex. It is currently generated using
+# the script "matlab/grid/contact.m" from the Matlab repository.
+
+NGCNAME: /dev/null
+
+# Input lateral boundary conditions file names. The USER has the option
+# to separate the required lateral boundary variables into individual
+# NetCDF files (NBCFILES > 1), as in the input surface forcing.  Also,
+# the USER may split input data time records into several NetCDF files
+# (monthly, seasonal, or annual). See prologue instructions above. Use
+# a single line per entry with a continuation (\) or a vertical bar (|)
+# symbol after each entry, except the last one.
+
+NBCFILES: 1                          # number of boundary files
+
+BRYNAME: /dev/null
+
+# Input climatology file names. The USER has the option to separate the
+# climatology variables into individual NetCDF files (NCLMFILES > 1),
+# as in the input surface forcing.  Also, the USER may split input data
+# time records into several NetCDF files (monthly, seasonal, or annual).
+# See prologue instructions above. Use a single line per entry with a
+# continuation (\) or a vertical bar (|) symbol after each entry, except
+# the last one.
+
+NCLMFILES: 1                          # number of climatology files
+
+CLMNAME: bio_toy_clm.nc
+
+# Input climatology nudging coefficients file name.
+
+NUDNAME: bio_toy_nud.nc
+
+# Input Sources/Sinks forcing (like river runoff) file name.
+
+SSFNAME: bio_toy_rivers.nc
+
+# Input tidal forcing file name.
+
+TIDENAME: bio_toy_tides.nc
+
+# Input forcing NetCDF file name(s).
+#
+# The USER has the option to enter several sets of file names for each
+# nested grid. For example, the USER may have different data for the
+# wind products, heat fluxes, etc. Alternatively, if the all the forcing
+# files are the same for nesting and the data is in its native resolution,
+# we could enter only one set of files names and ROMS will replicate those
+# files internally to the remaining grids using the plural KEYWORD protocol.
+#
+# The model will scan the files and will read the needed data from the first
+# file in the list containing the forcing field. Therefore, the order of the
+# filenames is critical. If using multiple forcing files per grid, first
+# enter all the file names for grid one followed by two, and so on.  It is
+# also possible to split input data time records into several NetCDF files
+# (see Prolog instructions above). Use a single line per entry with a
+# continuation (\) or a vertical bar (|) symbol after each entry, except
+# the last one.
+
+NFFILES: 1                          # number of unique forcing files
+
+FRCNAME: Data/bio_toy_frc.nc
+
+# Output NetCDF file names, [1:Ngrids].
+
+DAINAME: roms_dai.nc
+GSTNAME: roms_gst.nc
+RSTNAME: roms_rst.nc
+HISNAME: roms_his.nc
+XTRNAME: roms_xtr.nc
+QCKNAME: roms_qck.nc
+TLMNAME: roms_tlm.nc
+TLFNAME: roms_tlf.nc
+ADJNAME: roms_adj.nc
+AVGNAME: roms_avg.nc
+HARNAME: roms_har.nc
+DIANAME: roms_dia.nc
+STANAME: roms_sta.nc
+FLTNAME: roms_flt.nc
+
+# Input ASCII parameter filenames.
+
+APARNAM: s4dvar.in
+SPOSNAM: stations.in
+FPOSNAM: floats.in
+BPARNAM: npzd_Powell.in # npzd_Franks.in, npzd_iron.in
+SPARNAM: sediment.in
+USRNAME: MyFile.dat
