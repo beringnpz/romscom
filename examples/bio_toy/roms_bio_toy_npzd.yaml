@@ -218,7 +218,7 @@ LBC:
   isVvel:        [Per,    Per,    Per,    Per]         # 3D V-momentum
   isMtke:        [Per,    Per,    Per,    Per]         # mixing TKE
 
-  isTvar:        [Per,    Per,    Per,    Per          # temperature
+  isTvar:        [Per,    Per,    Per,    Per,         # temperature
                   Per,    Per,    Per,    Per]         # salinity
 
 # Waves Effect on Currents lateral boundary conditions.
@@ -238,7 +238,7 @@ ad_LBC:
   isUvel:        [Per,    Per,    Per,    Per]          # 3D U-momentum
   isVvel:        [Per,    Per,    Per,    Per]          # 3D V-momentum
   isMtke:        [Per,    Per,    Per,    Per]          # mixing TKE
-  isTvar:        [Per,    Per,    Per,    Per           # temperature
+  isTvar:        [Per,    Per,    Per,    Per,          # temperature
                   Per,    Per,    Per,    Per]          # salinity
 
 # Set lateral open boundary edge volume conservation switch for

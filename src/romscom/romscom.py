@@ -36,6 +36,7 @@ import math
 import os
 import subprocess
 from datetime import datetime, timedelta
+import warnings
 
 import netCDF4 as nc
 
@@ -332,11 +333,25 @@ def runtodate(ocean, simdir, simname, enddate, dtslow=None, addcounter="most",
         Exception("Input file missing, exiting")
     
     # Get starting time from initialization file
+    # TODO: Eventually would like to support other ROMS-supported calendar 
+    # options (e.g., 360_day) but it would require tracking the TIME_REF flags 
+    # after converting to datetime
+    # TODO: Would also like to add some checks to ensure files that include 
+    # calendar info and/or reference dates in their time attributes are properly
+    # synced with the TIME_REF parameter
 
     f = nc.Dataset(ocean['ININAME'], 'r')
     tunit = f.variables['ocean_time'].units
-    tcal = f.variables['ocean_time'].calendar
-    tini = max(nc.num2date(f.variables['ocean_time'][:], units=tunit, calendar=tcal))
+
+    if "day" in tunit:
+        tunit = "days"
+    elif "second" in tunit:
+        tunit = "seconds"
+    else:
+        warnings.warn("Your initialization time unit will be interpreted by ROMS as seconds")
+        tunit = "seconds"
+    tunit = f"{tunit} since {ocean['TIME_REF'].strftime("%Y-%m-%d %H:%M:%S")}"        
+    tini = max(nc.num2date(f.variables['ocean_time'][:], units=tunit, calendar='proleptic_gregorian'))
 
     # Create log file to document slow-stepping time periods
 
@@ -612,9 +627,9 @@ def converttimes(d, direction):
             dy = math.floor(d['TIME_REF'] - yr*10000 - mn*100)
             dyfrac = d['TIME_REF'] - yr*10000 - mn*100 - dy
             hr = dyfrac * 24
-            mnt = (dyfrac-math.floor(hr))*60
+            mnt = (dyfrac-math.floor(hr)/24)*60
             hr = math.floor(hr)
-            sc = math.floor((mnt - math.floor(mnt))*60) # Note: assuming no fractional seconds
+            sc = math.floor((mnt - math.floor(mnt)/60)*60) # Note: assuming no fractional seconds
             mnt = math.floor(mnt)
 
             d['TIME_REF'] = datetime(yr,mn,dy,hr,mnt,sc)

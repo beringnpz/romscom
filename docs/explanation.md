@@ -24,7 +24,7 @@ With this YAML/dictionary idea at its base, the toolbox then adds tools to manip
 - Convert between YAML files, python dictionaries, and traditional ROMS standard input format
 - Manipulate time-related variables using dates and timedeltas, allowing more intuitive modification of ROMS start date, time step, archiving options, etc.
 - Examine existing output files to restart a simulation that was paused or crashed
-- Runs ROMS past periods of instability (leading to blow-ups) by temporarily reducing the model time step 
+- Run ROMS past periods of numeric instability (leading to blow-ups) by temporarily reducing the model time step 
 
 
 ## What it is not
@@ -35,4 +35,4 @@ This toolbox is not ROMS!  A quick quote from the [ROMS GitHub](https://github.c
 
 ROMS is not the easiest tool to get started with.  Even a simple implementation requires the user to run their own builds of the source code, including locating the required libraries, compilers, etc.  There are hundreds of spinoffs of the code maintained by various research groups, in various states of development, use, and disrepair.  The romscom toolbox *should* work with most of these versions, and can help make the process of designing and running experiments a little smoother, and help keep your ROMS application folders a little neater.  But the process of building and configuring a new model domain or application is yours to conquer on your own!
 
-This toolbox also does *not* focus on building netCDF input files for ROMS simulations.  There are existing tools out there for that (e.g., [myroms.org pre- and post-processing tools](https://myroms.org/index.php?page=RomsPackages), [pyroms](https://github.com/ESMG/pyroms)).  These are, as pyroms puts it, a little rough around the edges (at best), but unfortunately creating a more robust option is well outside the scope of this little toolbox.  
+This toolbox also does *not* focus on building netCDF input files for ROMS simulations.  There are existing tools out there for that (e.g., [myroms.org pre- and post-processing tools](https://myroms.org/index.php?page=RomsPackages), [pyroms](https://github.com/ESMG/pyroms)).  These are, as pyroms puts it, a little rough around the edges (at best), but creating a more robust option is well outside the scope of this little toolbox.  

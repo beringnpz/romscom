@@ -35,8 +35,6 @@ Documentation = "https://github.com/beringnpz/romscom/#readme"
 Issues = "https://github.com/beringnpz/romscom/issues"
 Source = "https://github.com/beringnpz/romscom"
 
-# [tool.hatch.version]
-
 
 [tool.hatch.version]
 version-source = "calver"

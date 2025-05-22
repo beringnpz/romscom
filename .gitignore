@@ -43,3 +43,10 @@ __pycache__
 /*.egg-info
 /build
 .ipynb_checkpoints
+
+# This repo #
+######################
+romscom_dev_env.yml
+examples/bio_toy/In
+examples/bio_toy/Log
+examples/bio_toy/Out
