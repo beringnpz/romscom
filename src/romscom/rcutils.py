@@ -342,7 +342,7 @@ def inputfilesexist(ocean):
     flag = True
 
     for f in files:
-        if not f.startswith('placeholder') and not os.path.isfile(f):
+        if not f.startswith('placeholder') and not os.path.exists(f):
             warnings.warn(f"Cannot find file {f}")
             flag = False
 
