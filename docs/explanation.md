@@ -1,9 +1,5 @@
 # About
 
-## Introduction
-
-This python toolbox provides tools to communicate with the [Regional Ocean Modeling System (ROMS)](https://github.com/myroms/roms) model.  The primary goal of this toolbox is to allow ROMS simulations to be run programmatically, simplifying tasks such as resetting time variables to extend or restart simulations, running parameter sensitivity studies, or running large ensembles.
-
 ## Motivation
 
 A ROMS application typically includes a number of different [text files](https://www.myroms.org/wiki/Input_Parameter_Files) that are used to set the input parameters for its various components, including the main physical ocean parameters as well as any biology, sediment, ice, etc. parameters that may be active.  These input files, usually marked with a .in extension, use ROMS' Fortran-like custom namelist format; the format is easily human-readable and can be edited with any text editor, but is difficult to parse or edit programmatically (except by ROMS' non-standalone parser).  
@@ -11,7 +7,7 @@ A ROMS application typically includes a number of different [text files](https:/
 In a research context, I was frustrated with this format for a few reasons:
 
 - Our workflows often involved running many variations on a base simulation, resulting in a plethora of different input files that needed to be manually edited and tracked.  In practice, it was easy to loose track of when parameters had been changed and by who and why.
-- Our simulations were often run on computer clusters where jobs could be cancelled and resubmitted for various queue management reasons.  Restarting ROMS simulations requires certain edits to the inputs to ensure the simulation picks up where it left off.  Manually editing the input files is not compatible with automatic resubmission.
+- Our simulations were often run on computer clusters where jobs could be unpredictably cancelled and resubmitted for various queue management reasons.  Restarting ROMS simulations requires certain edits to the inputs to ensure the simulation picks up where it left off.  Manually editing the input files is not compatible with automatic resubmission.
 
 ## What it is
 

@@ -246,7 +246,7 @@ def parserst(filebase):
 
         rst = allrst[-1]
 
-        pattern = filebase + "_(\d+)_rst.nc"
+        pattern = filebase + r"_(\d+)_rst.nc"
         m = re.search(pattern, rst)
         cnt = int(m.group(1)) + 1
 
@@ -342,7 +342,7 @@ def inputfilesexist(ocean):
     flag = True
 
     for f in files:
-        if not f.startswith('placeholder') and not os.path.exists(f):
+        if (not f.startswith('placeholder')) and (not os.path.exists(f)):
             warnings.warn(f"Cannot find file {f}")
             flag = False
 

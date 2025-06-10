@@ -1,10 +1,13 @@
-site_name: ROMS Communication Toolbox (romscom) Docs
+site_name: ROMS Communication Toolbox (romscom)
 
 theme:
   name: "material"
   features:
     - content.footnote.tooltips
-
+    - navigation.sections
+  palette:
+    primary: blue 
+    accent: pink
 
 plugins:
   - mkdocstrings:
@@ -12,14 +15,18 @@ plugins:
       handlers:
         python:
           paths: [src]
+  - mkdocs-jupyter
 
 nav:
   - index.md
-  - About: explanation.md
-  - Getting Started: installation.md
-  - Examples: examples.md
-  - "Reference: romscom": reference_romscom.md
-  - "Reference: rcutils": reference_rcutils.md
+  - Information:
+    - About: explanation.md
+    - Getting Started: installation.md
+  - Examples:
+    - bio_toy: bio_toy_example.ipynb
+  - Reference: 
+    - romscom: reference_romscom.md
+    - rcutils: reference_rcutils.md
 
 markdown_extensions:
   - tables
