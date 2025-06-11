@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-calver"]
 build-backend = "hatchling.build"
 
 [project]
@@ -13,7 +13,7 @@ the Regional Ocean Modeling System (ROMS)
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-keywords = ["ROMS", "region", "ocean", "modeling"]
+keywords = ["ROMS", "regional", "ocean", "modeling"]
 authors = [
   { name = "Kelly Kearney", email = "kelly.kearney@noaa.gov" },
 ]
@@ -37,11 +37,9 @@ Source = "https://github.com/beringnpz/romscom"
 
 
 [tool.hatch.version]
-version-source = "calver"
+scheme = "calver"
+calver-scheme = "YYYY.0M"
 path = "src/romscom/__about__.py"
-
-[tool.hatch.version.calver]
-format = "YYYY.MM.PATCH"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
