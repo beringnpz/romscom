@@ -1,0 +1,786 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../explanation/">
+      
+      
+        <link rel="next" href="../bio_toy_example/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Getting Started - ROMS Communication Toolbox (romscom)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#installation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ROMS Communication Toolbox (romscom)" class="md-header__button md-logo" aria-label="ROMS Communication Toolbox (romscom)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ROMS Communication Toolbox (romscom)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Getting Started
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ROMS Communication Toolbox (romscom)" class="md-nav__button md-logo" aria-label="ROMS Communication Toolbox (romscom)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ROMS Communication Toolbox (romscom)
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Information
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Information
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    About
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading the modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-your-roms-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Preparing your ROMS application
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Preparing your ROMS application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml-format-for-roms" class="md-nav__link">
+    <span class="md-ellipsis">
+      YAML format for ROMS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-no_plural-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      The no_plural key
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bio_toy_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    A bio_toy sensitivity study
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference_romscom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    romscom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference_rcutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    rcutils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-the-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading the modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-your-roms-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      Preparing your ROMS application
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Preparing your ROMS application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml-format-for-roms" class="md-nav__link">
+    <span class="md-ellipsis">
+      YAML format for ROMS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-no_plural-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      The no_plural key
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Getting Started</h1>
+
+<h2 id="installation">Installation</h2>
+<p>The toolbox can be installed into your environment of choice from PyPI:</p>
+<div class="highlight"><pre><span></span><code>pip install romscom
+</code></pre></div>
+<p>or conda-forge:</p>
+<div class="highlight"><pre><span></span><code>conda install -c conda-forge romscom 
+</code></pre></div>
+<h2 id="loading-the-modules">Loading the modules</h2>
+<p>Once installed, the primary and accessory functions from this package can be accessed via:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">romscom.romscom</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">romscom.rcutils</span>
+</code></pre></div>
+<p>Full function help, including syntax descriptions, can be accessed via the help command:</p>
+<div class="highlight"><pre><span></span><code><span class="n">help</span><span class="p">(</span><span class="n">romscom</span><span class="o">.</span><span class="n">romscom</span><span class="p">)</span> <span class="c1"># All primary functions</span>
+<span class="n">help</span><span class="p">(</span><span class="n">romscom</span><span class="o">.</span><span class="n">rcutils</span><span class="p">)</span> <span class="c1"># All utility functions</span>
+<span class="n">help</span><span class="p">(</span><span class="n">romscom</span><span class="o">.</span><span class="n">romscom</span><span class="o">.</span><span class="n">runtodate</span><span class="p">)</span> <span class="c1"># Single function</span>
+</code></pre></div>
+<p>This same documentation is also available on this website through the References pages for the <a href="../reference_romscom/">romscom module</a> and <a href="../reference_rcutils/">rcutils module</a>.</p>
+<h2 id="preparing-your-roms-application">Preparing your ROMS application</h2>
+<p>Most users will come to this toolbox with an existing ROMS application.  To use this toolbox, you will first need to translate any existing .in files to YAML format.  For each ROMS application, I recommend creating one master set of YAML files, corresponding to the roms.in (ocean.in) standard input as well as any additional input ASCII parameters files (e.g., .in files) that are applicable to your setup; currently, this includes the APARNAM (assimilation), SPOSNAME (stations), FPOSNAM (drifter positions), SPARNAM (sediment), and BPARNAM (biology) parameter files.</p>
+<p>The following instructions for formatting your YAML input files is also replicated in the header of the example files, similar to the instructions in the default .in files.</p>
+<h3 id="yaml-format-for-roms">YAML format for ROMS</h3>
+<p>The YAML ROMS input format mimics that of ROMS standard input (e.g., roms.in) files, but using a more flexible format that is both human-readable and more easily machine-parsable than the standard input format.  </p>
+<p>These files are intended to be used with the ROMS Communication (romscom) toolbox.</p>
+<p>Input parameters can be entered in (almost) any order (but there are a few exceptions, like the tiling parameters, so I suggest maintaining the original order.)  Comments are preceded by a # sign and are ignored on reading. Most values follow standard YAML format.  Parameters should be entered as dictionary entries, with the parameter name as key.  Note that unlike ROMS standard input, indentation is important in the YAML format, and all parameter keywords should be left-justified.</p>
+<p>Integers are distinguished from floating point numbers by the presence or absence of decimal points (e.g., 1 = integer, 1.0 = float).</p>
+<p>Lists of parameters should be entered for keywords that expect multiple values.  These can either be entered across multiple lines: </p>
+<p><div class="highlight"><pre><span></span><code><span class="nt">AKT_BAK</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0e-6</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0e-6</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0e-6</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0e-6</span>
+</code></pre></div>
+or as "flow collections" on a single line:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">AKT_BAK</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1.0e-6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1.0e-6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5.0e-6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5.0e-6</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>or across multiple lines:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">AKT_BAK</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1.0e-6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1.0e-6</span><span class="p p-Indicator">,</span>
+<span class="w">          </span><span class="nv">5.0e-6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5.0e-6</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>The above three examples will all be interpreted identically.</p>
+<p>NetCDF filename parameters can accept "multiple filenames", where a single input dataset is split across several files.  These are marked by vertical bar separators (|) in the ROMS standard input.  In the YAML format, these should be entered as nested arrays, e.g,:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">NFFILES</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span>
+<span class="nt">FRCNAME</span><span class="p">:</span><span class="w"> </span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">my_lwrad_year1.nc</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">my_lwrad_year2.nc</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">my_swrad_year1.nc</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">my_swrad_year2.nc</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">my_winds_year1.nc</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">      </span><span class="nv">my_winds_year2.nc</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">my_Pair_year1.nc</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">      </span><span class="nv">my_Pair_year2.nc</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_Qair_year1.nc</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_Qair_year2.nc</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_Tair_year1.nc</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_Tair_year2.nc</span>
+</code></pre></div>
+<p>Again, all list syntaxes are valid, and may be used interchangeably as demonstrated here.</p>
+<p>Parameters with nested indices (e.g. <code>Hout(idUvel)</code>, <code>Hout(idVvel)</code>) are represented as dictionaries, with the nested indices as keys, e.g.:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">Hout</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">idUvel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRUE</span><span class="w">       </span><span class="c1"># u                  3D U-velocity</span>
+<span class="w">  </span><span class="nt">idVvel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TRUE</span><span class="w">       </span><span class="c1"># v                  3D V-velocity</span>
+</code></pre></div>
+<h3 id="the-no_plural-key">The <code>no_plural</code> key</h3>
+<p>In multiple levels of nesting or multiple connected domains step-ups, <code>Ngrids</code> entries are expected for some of these parameters. In such case, the order of the entries for a parameter is critical. It must follow the same order (1:Ngrids) as in the state variable declaration.  In the ROMS standard input format, these values are marked by a <code>==</code> plural after the KEYWORD instead of a <code>=</code>.  </p>
+<p>This is the one aspect of the ROMS standard input format for which I couldn't find an elegant counterpart in the YAML format.  Instead, each file starts with an additinal special <code>no_plural</code> key that lists the keywords in the rest of the file that are <strong>not</strong> grid-specific, i.e. that would use the <code>=</code> assignment (rather than <code>==</code>) in a standard .in file.</p>
+<p>The majority of these types of parameters are those related to file I/O, and are found in the primary standard input files.  This is a bit of a moving target, since parameters may be added or removed with each new release of ROMS.  I specifically chose to make this part of the input files rather than the toolbox itself to avoid tying the functionality too closely to any specific version of ROMS. At the time of this writing (latest release: ROMS 4.2), the values for these across file types is as follows:</p>
+<p>Standard input (ocean.in):</p>
+<p><div class="highlight"><pre><span></span><code><span class="nt">no_plural</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">TITLE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">MyAppCPP</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">VARNAME</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Ngrids</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NestLayers</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">GridsInLayer</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">Nbed</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NAT</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NPT</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NCS</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NNS</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">ERstr</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ERend</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Nouter</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Ninner</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Nsaddle</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Nintervals</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">NEV</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NCV</span>
+<span class="w">            </span><span class="nv">LmultiGST</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">LrstGST</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">MaxIterGST</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NGST</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">Ritz_tol</span>
+<span class="w">            </span><span class="nv">RHO0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">BVF_BAK</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Lmodel</span><span class="p p-Indicator">,</span>
+<span class="w">            </span><span class="nv">DSTART</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">TIDE_START</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">TIME_REF</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">NSLICE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Z_SLICE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NUSER</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">USER</span><span class="p p-Indicator">,</span>
+<span class="w">            </span><span class="nv">INP_LIB</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">OUT_LIB</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">PIO_METHOD</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_IOTASKS</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_STRIDE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_BASE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_AGGREG</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">            </span><span class="nv">PIO_REAR</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_REARRCOM</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_REARRDIR</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_C2I_HS</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_C2I_Send</span><span class="p p-Indicator">,</span>
+<span class="w">            </span><span class="nv">PIO_C2I_Preq</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_I2C_HS</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_I2C_Send</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PIO_I2C_Preq</span><span class="p p-Indicator">,</span><span class="w">  </span>
+<span class="w">            </span><span class="nv">NC_SHUFFLE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NC_DEFLATE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NC_DLEVEL</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+APARNAM (assimilation) parameter file:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">no_plural</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">LNM_flag</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">balance</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Nvct</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">GradErr</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">HevecErr</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">LhessianEV</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">LhotStart</span><span class="p p-Indicator">,</span>
+<span class="w">            </span><span class="nv">Lprecond</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Lritz</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NritzEV</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">NpostI</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Nimpact</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">OuterLoop</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Phases4DVAR</span><span class="p p-Indicator">,</span>
+<span class="w">            </span><span class="nv">NextraObs</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ExtraIndex</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ExtraName</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">CnormM</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">CnormI</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">CnormB</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">CnormF</span><span class="p p-Indicator">,</span>
+<span class="w">            </span><span class="nv">Nrandom</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Hgamma</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Vgamma</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>SPOSNAME (stations) parameter file:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">no_plural</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">POS</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>FPOSNAM (drifter positions) parameter file</p>
+<div class="highlight"><pre><span></span><code><span class="nt">no_plural</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">POS</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>SPARNAM (sediment) parameter file</p>
+<div class="highlight"><pre><span></span><code><span class="nt">no_plural</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</code></pre></div>
+<p>BPARNAM (biology) parameter file:</p>
+<p><div class="highlight"><pre><span></span><code><span class="nt">no_plural</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</code></pre></div>
+(Note: depends on the biology module in question, but most do not include any exceptions)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.footnote.tooltips", "navigation.sections"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>

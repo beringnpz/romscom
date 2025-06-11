@@ -15,7 +15,7 @@ With this YAML/dictionary idea at its base, the toolbox then adds tools to manip
 - Examine existing output files to restart a simulation that was paused or crashed
 - Runs ROMS past periods of instability (leading to blow-ups) by temporarily reducing the model time step 
 
-See the included documentation for a more detailed description, examples of usage, and function syntax and documentation.
+See the included [documentation](https://beringnpz.github.io/romscom/) for a more detailed description, examples of usage, and function syntax and documentation.
 
 ## Installation and use
 
@@ -46,4 +46,4 @@ help(romscom.rcutils) # All utility functions
 help(romscom.romscom.runtodate) # Single function
 ```
 
-This same documentation can also be viewed on the documentation website through the References pages.
+This same documentation can also be viewed on the [documentation website](https://beringnpz.github.io/romscom/) References pages.
