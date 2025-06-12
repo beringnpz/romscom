@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "romscom"
 dynamic = ["version"]
 description = """
-ROMS Communication Toolbox
+ROMS Communication Toolbox:
 Python utilities to format text input for and run simulations of
 the Regional Ocean Modeling System (ROMS)
 """
