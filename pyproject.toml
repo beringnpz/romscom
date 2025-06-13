@@ -12,7 +12,8 @@ the Regional Ocean Modeling System (ROMS)
 """
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = "CC0-1.0"
+license-files = ["LICEN[CS]E*"]
 keywords = ["ROMS", "regional", "ocean", "modeling"]
 authors = [
   { name = "Kelly Kearney", email = "kelly.kearney@noaa.gov" },
