@@ -25,11 +25,11 @@ The toolbox can be installed into your environment of choice from PyPI:
 pip install romscom
 ```
 
-or conda-forge:
+<!-- or conda-forge:
 
 ``` 
 conda install -c conda-forge romscom 
-```
+``` -->
 
 Once installed, the primary and accessory functions from this package can be accessed in python via:
 
