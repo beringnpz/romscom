@@ -107,8 +107,8 @@ Thank you to my research colleagues and collaborators who tested this code over 
 
 This paper is to be submitted to the [Journal of Open Source Software](https://joss.theoj.org/).  Peer review for this journal focuses on review of the source code and documentation of scientific software itself (rather than of a companion paper).  Links for the relevant components are as follows:
 
-- Source code: https://github.com/beringnpz
-- Documentation: https://beringnpz.github.io/romscom/
+- Source code: [https://github.com/beringnpz/romscom](https://github.com/beringnpz/romscom)
+- Documentation: [https://beringnpz.github.io/romscom/](https://beringnpz.github.io/romscom/)
 
 This section will be removed upon submission to JOSS, when these links will be incorporated into the final rendered document.
 
