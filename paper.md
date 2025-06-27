@@ -1,6 +1,5 @@
 ---
-title: 'The ROMS Communication Toolbox (romscom): helper utilities for
-the Regional Ocean Modeling System (ROMS)'
+title: 'The ROMS Communication Toolbox (romscom): input parameter utilities for the Regional Ocean Modeling System (ROMS)'
 tags:
   - Python
   - oceanography
@@ -8,13 +7,13 @@ tags:
   - ROMS
 authors:
   - name: Kelly Kearney
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-6152-5236
     equal-contrib: true
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+    affiliation: 1 # (Multiple affiliations must be quoted)
 affiliations:
  - name: NOAA NMFS Alaska Fisheries Science Center, Seattle, WA, USA
    index: 1
-date: 13 June 2025
+date: 27 June 2025
 bibliography: paper.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
@@ -25,24 +24,20 @@ bibliography: paper.bib
 
 # Summary
 
-The Regional Ocean Modeling System (ROMS) is a primitive equations hydrodynamic model that is widely used in the field of oceanography.  It is characterized by a split-explicit time stepping scheme, free surface, and terrain-following vertical coordinate system. all of which make it well suited to exploring ocean dynamics at regional scales [@Shchepetkin2005].  The model has been in use for nearly three decades, and its  flexibile, open-source code base has led to a proliferation of applications.
+The Regional Ocean Modeling System (ROMS) is a primitive equations hydrodynamic model that is widely used in the field of oceanography [@Shchepetkin2005].  It is characterized by a split-explicit time stepping scheme, free surface, and terrain-following vertical coordinate system, all of which make it well suited to exploring ocean dynamics at regional scales [@Haidvogel2008].  The model has been in use for nearly three decades, and its community approach, open-source code base, and extensive suite of numerical algorithms have led to a proliferation of applications.
 
-A specific implementation of ROMS requires of number of different parts: the core source code (.F Fortran files),  configuration files (.h header files) to selectively compile the appropriate options for a given application, plain text input files (.in plan text files) to set the values of parameters, and (if applicable) larger input datasets (.nc netCDF files) for gridded input such as surface and lateral boundary conditions of the simulation.
-
-
-
-
-<!-- The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration). -->
+A specific implementation of ROMS requires of number of different parts: the core source code (.F Fortran files),  configuration files (.h header files) to selectively compile the appropriate options for a given application, parameter input files (.in plain text files) to set the values of parameters, and (if applicable) larger input datasets (.nc netCDF files) for gridded input such as surface and lateral boundary conditions of the simulation.  Managing and tracking these many different parts can be challenging, particularly when running complex sensitivity experiments or ensemble experiments.  This is particularly true with respect to the plain text parameter input files.  These files use a custom format, described in the documentation as having "similar functionality as Fortran input namelist but with additional capabilities."  These inputs can be read by ROMS's own parsing routine (inp_par.F), but do not use a format easily accessible to the high-level programming languages commonly used to manage a scientific workflow.  In a typical ROMS workflow, they are created and edited manually via a text editor.  In complex experiments, this can lead to a proliferation of files representing various stages of the experiment -- e.g., an original set of parameters, some changes that are meant to be permanent and carried forward for all subsequent runs, and other changes that were sensitivity tests but are no longer needed -- or files that are constantly modified and overwritten.
 
 # Statement of need
+
+The ROMS Communication Toolbox is a set of python utilities that facilitate the workflow management of one or more ROMS simulations.  The majority of the tools focus on programatic manipulation of the ROMS parameter input files.  In particular, the utilities allow one to:
+
+- manage ROMS input parameters using the versatile YAML format, with options to import and export between YAML files and python dictionaries, and to export from python dictionaries to the traditional ROMS standard input format;
+- manipulate time-related variables using dates and timedeltas, allowing more intuitive modification of ROMS start date, time step, archiving options, etc.; and
+- automatically submit simulations for calculation, and resume simulations that were paused or crashed by analyzing existing restart and history output and then appropriately adjusting time step parameters and re-calling the ROMS executable; options are available to work past periods of numeric instability (leading to blow-ups) by temporarily reducing the model time step. 
+
+This combination of tools allows one to manage and document complex regional modeling experiments using a single python script.  This supports transparency in the ROMS modeling process, and addresses the need for reproducible workflows covering the entirety of the regional modeling process [@polton_reproducible_2023].
+
 
 <!-- `Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
 enables wrapping low-level languages (e.g., C) for speed without losing
@@ -106,7 +101,6 @@ Figure sizes can be customized by adding an optional second parameter:
 
 # Acknowledgements
 
-<!-- We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project. -->
+Thank you to my research colleagues and collaborators who tested this code over its progressive development: Al Hermann, Wei Cheng, Ivonne Ortiz, Darren Pilcher, and Kerim Aydin.
 
 # References
